@@ -65,8 +65,10 @@ int main() {
 
 	while (1){
 		if (isLogin) { // 已登录
-			char args[100] = "\0";
-			//readline(args); // readline.h 中的行输入函数，在shell实现时比较方便
+			string args = "\0";
+			// readline.h 中的行输入函数，在shell实现时比较方便
+			//readline(args); 
+			getline(cin, args);
 			cmd(args);
 		}
 		else { // 未登录
