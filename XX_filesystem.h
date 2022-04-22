@@ -24,7 +24,6 @@ const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_
 const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
 const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP;
 
-
 // 文件系统相关变量
 bool isLogin = false; // 是否已登录
 char buffer[Sum_Size] = { 0 }; // 虚拟磁盘文件缓存
