@@ -7,6 +7,7 @@ using namespace std;
 
 const int Sum_Size = 0;
 
+bool isLogin = false;
 char buffer[10 * 1024 * 1024] = { 0 };
 
 FILE* fr; // 虚拟文件的读指针
@@ -14,3 +15,7 @@ FILE* fw; // 虚拟文件的写指针
 
 bool Format(); // 格式化虚拟磁盘文件
 void Initial(); // 初始化虚拟磁盘文件
+bool Install(); // 安装虚拟磁盘文件
+void Login(); // 用户登录
+
+void cmd(char *args);

@@ -52,8 +52,27 @@ int main() {
 	}
 	// 不需要格式化
 
-	//初始化文件
+	//初始化虚拟磁盘文件
 	Initial();
+
+	// 安装虚拟磁盘文件
+	if (!Install()) {
+		// 安装文件失败
+		cout << "安装虚拟磁盘文件失败..." << endl;
+		return 1;
+	}
+	// 安装文件成功
+
+	while (1){
+		if (isLogin) { // 已登录
+			char args[100] = "\0";
+			//readline(args); // readline.h 中的行输入函数，在shell实现时比较方便
+			cmd(args);
+		}
+		else { // 未登录
+			Login(); // 登录
+		}
+	}
 	
 	return 0;
 }
