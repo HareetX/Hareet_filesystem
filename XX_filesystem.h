@@ -10,16 +10,19 @@ using namespace std;
 #define INODE_SIZE 128 // inode大小为 128 B
 #define INODE_NUM 640 // inode数量为 640
 
-#define BLOCKS_PER_SUPERBLOCK 1
-#define BLOCKS_PER_IBITMAP 1
-#define BLOCKS_PER_BBITMAP 3
+#define BLOCKS_PER_SUPERBLOCK 1 // 1个superblock占1个block
+#define BLOCKS_PER_IBITMAP 1 // 1个inode位图占1个block
+#define BLOCKS_PER_BBITMAP 3 // 1个block位图占3个block ：3 * 4 KB = 12 KB > 10 KB
+#define BLOCKS_PER_ILABEL 20 // 1个superblock占1个block
 
 // 磁盘文件相关常量
 const int Sum_Size = BLOCK_SIZE * BLOCK_NUM + INODE_SIZE * INODE_NUM;
-const int Super_Block_Address = 0;
-const int Inode_Bitmap_Address = Super_Block_Address + BLOCK_SIZE * BLOCKS_PER_SUPERBLOCK;
+const int Super_Block_Address  = 0;
+const int Inode_Bitmap_Address = Super_Block_Address  + BLOCK_SIZE * BLOCKS_PER_SUPERBLOCK;
 const int Block_Bitmap_Address = Inode_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_IBITMAP;
-
+const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_BBITMAP;
+const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
+const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP;
 
 
 // 文件系统相关变量
