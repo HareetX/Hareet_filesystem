@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-// 磁盘文件相关宏定义
+// 磁盘文件相关宏定义...........
 #define FILESYSTEMNAME "XX_filesystem.sys" // 虚拟磁盘文件名称
 #define BLOCK_SIZE 4096 // block大小为 4096 B = 4 KB
 #define BLOCK_NUM 10240 // block数量为 10240
