@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "Block.h"
 using namespace std;
 
 // 磁盘文件相关宏定义
