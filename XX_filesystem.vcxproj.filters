@@ -18,9 +18,15 @@
     <ClCompile Include="XX_filesystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="XX_filesystem_FUN.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XX_filesystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DiskStruct.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

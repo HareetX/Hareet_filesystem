@@ -1,4 +1,5 @@
 #include "XX_filesystem.h"
+#include "DiskStruct.h"
 
 int main() {
 	bool isFormat = false; // 是否需要格式化

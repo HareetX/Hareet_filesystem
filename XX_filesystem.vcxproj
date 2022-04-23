@@ -140,8 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="XX_filesystem.cpp" />
+    <ClCompile Include="XX_filesystem_FUN.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DiskStruct.h" />
     <ClInclude Include="XX_filesystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
