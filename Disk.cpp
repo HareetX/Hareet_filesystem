@@ -1,7 +1,7 @@
 
-#include "Block.h"
+#include "Disk.h"
 
-Block::Block(short int No)
+Block::Block(int No)
 {
 	this->No = No;
 }
@@ -11,7 +11,7 @@ void Block::printInfo()
 	cout << "当前Block块号为" << No << endl;
 }
 
-short int Block::getNO()
+int Block::getNO()
 {
 	return No;
 }
@@ -28,7 +28,7 @@ void Block::block_write(FILE* fw, char buf[])
 	fwrite(buf, BLOCK_SIZE, 1, fw);
 }
 
-Superblock::Superblock(short int free_INum, short int free_BNum) :Block(0)
+Superblock::Superblock(int free_INum, int free_BNum) :Block(0)
 {
 	free_Inode_Num = free_INum;
 	free_Block_Num = free_BNum;
@@ -37,16 +37,16 @@ Superblock::Superblock(short int free_INum, short int free_BNum) :Block(0)
 Superblock::Superblock() :Block(0)
 {
 	free_Inode_Num = INODE_NUM;
-	free_Block_Num = BLOCK_NUM;
+	free_Block_Num = Block_Num;
 }
 
 void Superblock::printInfo()
 {
 	cout << "Superblock信息：" << endl;
-	cout << "	Inode总数  ：" << Inode_Num << endl;
-	cout << "	剩余Inode数：" << free_Inode_Num << endl;
-	cout << "	Block总数  ：" << Block_Num << endl;
-	cout << "	剩余Block数：" << free_Inode_Num << endl;
+	cout << "	Inode总数  ：" << s_Inode_Num << endl;
+	cout << "	空闲Inode数：" << free_Inode_Num << endl;
+	cout << "	Block总数  ：" << s_Block_Num << endl;
+	cout << "	空闲Block数：" << free_Inode_Num << endl;
 }
 
 Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
@@ -125,4 +125,35 @@ void Inode_Bitmap::printInfo()
 	else {
 		cout << "	空闲Inode情况：Inode[ " << first_free << " ] ..." << endl;
 	}
+}
+
+Inode::Inode(int No, int mode, int size, int time, int index[BLOCK_INDEX])
+{
+	i_No = No;
+	f_mode = mode;
+	f_size = size;
+	c_time = time;
+	for (int i = 0; i < BLOCK_INDEX; i++) {
+		block_index[i] = index[i];
+	}
+}
+
+Inode::Inode(int No, int mode, int size, int time)
+{
+	i_No = No;
+	f_mode = mode;
+	f_size = size;
+	c_time = time;
+	for (int i = 0; i < BLOCK_INDEX; i++) {
+		block_index[i] = -1;
+	}
+}
+
+void Inode::printInfo()
+{
+	cout << "Inode[ " << i_No << " ]：" << endl;
+	cout << "	文件类型：" <<
+		((f_mode) ? "目录文件类型" : "普通文件类型") << endl;
+	cout << "	文件大小：" << f_size << " B" << endl;
+	cout << "	创建时间：" << c_time << endl;
 }

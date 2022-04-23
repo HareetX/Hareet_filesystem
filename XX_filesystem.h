@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Block.h"
+#include "Disk.h"
 using namespace std;
 
 // 磁盘文件相关宏定义
@@ -15,6 +15,11 @@ using namespace std;
 #define BLOCKS_PER_IBITMAP 1 // 1个inode位图占1个block
 #define BLOCKS_PER_BBITMAP 3 // 1个block位图占3个block ：3 * 4 KB = 12 KB > 10 KB
 #define BLOCKS_PER_ILABEL 20 // 1个superblock占1个block
+
+// Inode相关宏定义
+#define BLOCK_INDEX 8 // Inode的直接块数
+#define FILE_MODE 0 // 普通文件类型
+#define DIR_MODE 1 // 目录文件类型
 
 // 磁盘文件相关常量
 const int Sum_Size = BLOCK_SIZE * BLOCK_NUM + INODE_SIZE * INODE_NUM;
