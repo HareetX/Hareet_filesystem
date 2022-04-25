@@ -45,6 +45,18 @@ void DataBlock::buffer_write(char buf[Block_Num * BLOCK_SIZE])
 	}
 }
 
+void DataBlock::block_read(FILE* fpr)
+{
+	fseek(fpr, Block_Address, SEEK_SET);
+	fread(buffer, static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fpr);
+}
+
+void DataBlock::block_write(FILE* fpw)
+{
+	fseek(fpw, Block_Address, SEEK_SET);
+	fwrite(buffer, static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fpw);
+}
+
 Superblock::Superblock(int free_INum, int free_BNum) :Block(0)
 {
 	free_Inode_Num = free_INum;
@@ -72,6 +84,22 @@ void Superblock::printInfo()
 	cout << "	¿ÕÏÐBlockÊý£º" << free_Inode_Num << endl;
 }
 
+void Superblock::block_read(FILE* fpr)
+{
+	fseek(fpr, Super_Block_Address, SEEK_SET);
+	fread(&free_Inode_Num, sizeof(int), 1, fpr);
+	fseek(fpr, Super_Block_Address + sizeof(int), SEEK_SET);
+	fread(&free_Block_Num, sizeof(int), 1, fpr);
+}
+
+void Superblock::block_write(FILE* fpw)
+{
+	fseek(fpw, Super_Block_Address, SEEK_SET);
+	fwrite(&free_Inode_Num, sizeof(int), 1, fpw);
+	fseek(fpw, Super_Block_Address + sizeof(int), SEEK_SET);
+	fwrite(&free_Block_Num, sizeof(int), 1, fpw);
+}
+
 Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
 {
 	for (int i = 0; i < Block_Num; i++) {
@@ -79,7 +107,7 @@ Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
 	}
 }
 
-Block_Bitmap::Block_Bitmap(): Block(1)
+Block_Bitmap::Block_Bitmap(): Block(BLOCKS_PER_SUPERBLOCK)
 {
 	for (int i = 0; i < Block_Num; i++) {
 		b_isUsed[i] = 0;
@@ -118,7 +146,20 @@ void Block_Bitmap::printInfo()
 	}
 }
 
-Inode_Bitmap::Inode_Bitmap(bool isUsed[INODE_NUM]): Block(4)
+void Block_Bitmap::block_read(FILE* fpr)
+{
+	fseek(fpr, Block_Bitmap_Address, SEEK_SET);
+	fread(b_isUsed, Block_Num, 1, fpr);
+}
+
+void Block_Bitmap::block_write(FILE* fpw)
+{
+	fseek(fpw, Block_Bitmap_Address, SEEK_SET);
+	fwrite(b_isUsed, Block_Num, 1, fpw);
+}
+
+
+Inode_Bitmap::Inode_Bitmap(bool isUsed[INODE_NUM]): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP)
 {
 	for (int i = 0; i < INODE_NUM; i++) {
 		i_isUsed[i] = isUsed[i];
@@ -162,6 +203,18 @@ void Inode_Bitmap::printInfo()
 	else {
 		cout << "	¿ÕÏÐInodeÇé¿ö£ºInode[ " << first_free << " ] ..." << endl;
 	}
+}
+
+void Inode_Bitmap::block_read(FILE* fpr)
+{
+	fseek(fpr, Inode_Bitmap_Address, SEEK_SET);
+	fread(i_isUsed, INODE_NUM, 1, fpr);
+}
+
+void Inode_Bitmap::block_write(FILE* fpw)
+{
+	fseek(fpw, Inode_Bitmap_Address, SEEK_SET);
+	fwrite(i_isUsed, INODE_NUM, 1, fpw);
 }
 
 Inode::Inode(int No, int mode, int size, int time_c, int index[BLOCK_INDEX])
@@ -226,8 +279,9 @@ void Inode::setI_No(int No)
 	i_No = No;
 }
 
-Inode_Label::Inode_Label(): Block(5)
+Inode_Label::Inode_Label(): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP + BLOCKS_PER_IBITMAP)
 {
+	//inode = new Inode[INODE_NUM];
 	for (int i = 0; i < INODE_NUM; i++) {
 		inode[i].setI_No(i);
 	}
@@ -242,74 +296,124 @@ void Inode_Label::format()
 
 void Inode_Label::printInfo()
 {
+	cout << "TODO" << endl;
 }
 
-
-void Disk::format()
+void Inode_Label::block_read(FILE* fpr)
 {
-	spb.format();
-	b_bmap.format();
-	i_bmap.format();
-	i_label.format();
-	d_block.format();
+	for (int i = 0; i < INODE_NUM; i++) {
+		fseek(fpr, Inode_Label_Address + i * INODE_SIZE, SEEK_SET);
+		fread(inode + i, sizeof(Inode), 1, fpr);
+	}
 }
 
-void Disk::spb_read(FILE *fr)
+void Inode_Label::block_write(FILE* fpw)
 {
-	fseek(fr, Super_Block_Address, SEEK_SET);
-	fread(&spb, sizeof(Superblock), 1, fr);
+	for (int i = 0; i < INODE_NUM; i++) {
+		fseek(fpw, Inode_Label_Address + i * INODE_SIZE, SEEK_SET);
+		fwrite(inode + i, sizeof(Inode), 1, fpw);
+	}
 }
 
-void Disk::b_bmap_read(FILE *fr)
+
+void Disk::format(Block& b)
 {
-	fseek(fr, Block_Bitmap_Address, SEEK_SET);
-	fread(&b_bmap, sizeof(Block_Bitmap), 1, fr);
+	b.format();
 }
 
-void Disk::i_bmap_read(FILE* fr)
+void Disk::disk_format()
 {
-	fseek(fr, Inode_Bitmap_Address, SEEK_SET);
-	fread(&i_bmap, sizeof(Inode_Bitmap), 1, fr);
+	format(spb);
+	format(b_bmap);
+	format(i_bmap);
+	format(i_label);
+	format(d_block);
 }
 
-void Disk::inode_read(FILE* fr)
+void Disk::block_read(Block& b, FILE* fpr)
 {
-	fseek(fr, Inode_Label_Address, SEEK_SET);
-	fread(&i_label, sizeof(Inode_Label), 1, fr);
+	b.block_read(fpr);
 }
 
-void Disk::d_block_read(FILE* fr)
+void Disk::disk_read(FILE* fpr)
 {
-	fseek(fr, Block_Address, SEEK_SET);
-	fread(d_block.buffer_return(), static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fr);
+	block_read(spb, fpr);
+	block_read(b_bmap, fpr);
+	block_read(i_bmap, fpr);
+	block_read(i_label, fpr);
+	block_read(d_block, fpr);
 }
 
-void Disk::spb_write(FILE* fw)
+//void Disk::spb_read(FILE *fr)
+//{
+//	fseek(fr, Super_Block_Address, SEEK_SET);
+//	fread(&spb, sizeof(Superblock), 1, fr);
+//}
+//
+//void Disk::b_bmap_read(FILE *fr)
+//{
+//	fseek(fr, Block_Bitmap_Address, SEEK_SET);
+//	fread(&b_bmap, sizeof(Block_Bitmap), 1, fr);
+//}
+//
+//void Disk::i_bmap_read(FILE* fr)
+//{
+//	fseek(fr, Inode_Bitmap_Address, SEEK_SET);
+//	fread(&i_bmap, sizeof(Inode_Bitmap), 1, fr);
+//}
+//
+//void Disk::inode_read(FILE* fr)
+//{
+//	fseek(fr, Inode_Label_Address, SEEK_SET);
+//	fread(&i_label, sizeof(Inode_Label), 1, fr);
+//}
+//
+//void Disk::d_block_read(FILE* fr)
+//{
+//	fseek(fr, Block_Address, SEEK_SET);
+//	fread(d_block.buffer_return(), static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fr);
+//}
+
+void Disk::block_write(Block& b, FILE* fpw)
 {
-	fseek(fw, Super_Block_Address, SEEK_SET);
-	fwrite(&spb, sizeof(Superblock), 1, fw);
+	b.block_write(fpw);
 }
 
-void Disk::b_bmap_write(FILE* fw)
+void Disk::disk_write(FILE* fpw)
 {
-	fseek(fw, Block_Bitmap_Address, SEEK_SET);
-	fwrite(&b_bmap, sizeof(Block_Bitmap), 1, fw);
+	block_write(spb, fpw);
+	block_write(b_bmap, fpw);
+	block_write(i_bmap, fpw);
+	block_write(i_label, fpw);
+	block_write(d_block, fpw);
 }
 
-void Disk::i_bmap_write(FILE* fw)
-{
-	fseek(fw, Inode_Bitmap_Address, SEEK_SET);
-	fwrite(&i_bmap, sizeof(Inode_Bitmap), 1, fw);
-}
-
-void Disk::inode_write(FILE* fw)
-{
-	fseek(fw, Inode_Label_Address, SEEK_SET);
-	fread(&i_label, sizeof(Inode_Label), 1, fw);
-}
-
-void Disk::d_block_write(FILE* fw)
-{
-	fseek(fw, Block_Address, SEEK_SET);
-	fwrite(d_block.buffer_return(), static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fw);
-}
+//void Disk::spb_write(FILE* fw)
+//{
+//	fseek(fw, Super_Block_Address, SEEK_SET);
+//	fwrite(&spb, sizeof(Superblock), 1, fw);
+//}
+//
+//void Disk::b_bmap_write(FILE* fw)
+//{
+//	fseek(fw, Block_Bitmap_Address, SEEK_SET);
+//	fwrite(&b_bmap, sizeof(Block_Bitmap), 1, fw);
+//}
+//
+//void Disk::i_bmap_write(FILE* fw)
+//{
+//	fseek(fw, Inode_Bitmap_Address, SEEK_SET);
+//	fwrite(&i_bmap, sizeof(Inode_Bitmap), 1, fw);
+//}
+//
+//void Disk::inode_write(FILE* fw)
+//{
+//	fseek(fw, Inode_Label_Address, SEEK_SET);
+//	fwrite(&i_label, sizeof(Inode_Label), 1, fw);
+//}
+//
+//void Disk::d_block_write(FILE* fw)
+//{
+//	fseek(fw, Block_Address, SEEK_SET);
+//	fwrite(d_block.buffer_return(), static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fw);
+//}

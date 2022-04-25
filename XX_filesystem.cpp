@@ -3,7 +3,7 @@
 
 int main() {
 	FileSystem fs; // 实例化FileSystem，并初始化文件系统
-	
+
 	// 打开磁盘文件
 	if (!Open(fs)) {
 		// 打开磁盘文件失败
@@ -12,7 +12,7 @@ int main() {
 	}// 成功打开文件
 	
 	// 检查文件系统格式化需求，并按需格式化
-	if (!Format(fs)) {
+ 	if (!Format(fs)) {
 		// 格式化失败
 		cout << "格式化失败..." << endl;
 		return -1;
@@ -60,7 +60,7 @@ int main() {
 	//	}
 	//}
 	
-	//Close(fs);
+	Close(fs);
 
 	return 0;
 }

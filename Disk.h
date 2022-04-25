@@ -18,6 +18,9 @@ public:
 
 	// 块接口
 	int getNO(); // 获取块号
+
+	virtual void block_read(FILE* fpr) = 0; // 读入块内数据
+	virtual void block_write(FILE* fpw) = 0; // 写入磁盘文件
 };
 
 // 数据块
@@ -40,6 +43,9 @@ public:
 	// 数据块接口
 	char* buffer_return(); // 返回指向数据块数据的指针
 	void buffer_write(char buf[Block_Num * BLOCK_SIZE]); // 根据传入的数组改写数据块的数据
+
+	virtual void block_read(FILE* fpr); // 读入数据块
+	virtual void block_write(FILE* fpw); // 写入磁盘文件
 };
 
 class Superblock :
@@ -60,6 +66,10 @@ public:
 
 	// 打印Superblock信息
 	virtual void printInfo();
+
+	// Superblock接口
+	virtual void block_read(FILE* fpr); // 读入Superblock
+	virtual void block_write(FILE* fpw); // 写入磁盘文件
 };
 
 class Block_Bitmap :
@@ -77,6 +87,10 @@ public:
 	// 打印Block占用情况
 	virtual void printInfo();
 
+	// Block_Bitmap接口
+	virtual void block_read(FILE* fpr); // 读入Block_Bitmap
+	virtual void block_write(FILE* fpw); // 写入磁盘文件
+
 };
 
 class Inode_Bitmap :
@@ -93,6 +107,10 @@ public:
 
 	// 打印Inode占用情况
 	virtual void printInfo();
+
+	// Inode_Bitmap接口
+	virtual void block_read(FILE* fpr); // 读入Inode_Bitmap
+	virtual void block_write(FILE* fpw); // 写入磁盘文件
 };
 
 class Inode
@@ -134,6 +152,10 @@ public:
 
 	// 打印Inode表信息
 	virtual void printInfo(); /*TODO*/
+
+	// Inode_Label接口
+	virtual void block_read(FILE* fpr); // 读入Inode_Label
+	virtual void block_write(FILE* fpw); // 写入磁盘文件
 };
 
 // Disk单元
@@ -148,7 +170,8 @@ private:
 
 public:
 
-	void format(); // Disk单元格式化
+	void format(Block& b); // Disk单元内各块区格式化
+	void disk_format(); // Disk单元格式化
 
 	/*
 	* Disk单元接口
@@ -156,18 +179,24 @@ public:
 
 	// 将磁盘文件读入Disk单元
 	
-	void spb_read(FILE* fr);// Superblock读入
-	void b_bmap_read(FILE *fr);// Block位图读入
-	void i_bmap_read(FILE* fr);// Inode位图读入
-	void inode_read(FILE* fr);// Inode表读入
-	void d_block_read(FILE* fr);// 数据块缓存读入
+	void block_read(Block& b, FILE* fpr); // Disk单元内各块区数据读入
+	void disk_read(FILE* fpr); // Disk单元读入
+
+	//void spb_read(FILE* fr);// Superblock读入
+	//void b_bmap_read(FILE *fr);// Block位图读入
+	//void i_bmap_read(FILE* fr);// Inode位图读入
+	//void inode_read(FILE* fr);// Inode表读入
+	//void d_block_read(FILE* fr);// 数据块缓存读入
 	
 	
 	// 将Disk单元存入磁盘文件
 	
-	void spb_write(FILE* fw);// Superblock存入
-	void b_bmap_write(FILE* fw);// Block位图存入
-	void i_bmap_write(FILE* fw);// Inode位图存入
-	void inode_write(FILE* fw);// Inode表存入
-	void d_block_write(FILE* fw);// 数据块缓存存入
+	void block_write(Block& b, FILE* fpw); // Disk单元内各块区数据写出
+	void disk_write(FILE* fpw); // // Disk单元写出
+
+	//void spb_write(FILE* fw);// Superblock存入
+	//void b_bmap_write(FILE* fw);// Block位图存入
+	//void i_bmap_write(FILE* fw);// Inode位图存入
+	//void inode_write(FILE* fw);// Inode表存入
+	//void d_block_write(FILE* fw);// 数据块缓存存入
 };

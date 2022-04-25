@@ -27,11 +27,7 @@ bool FileSystem::readSysFile()
 	}
 	else { // 文件已打开
 		// 把磁盘文件读入disk
-		disk.spb_read(fr);
-		disk.b_bmap_read(fr);
-		disk.i_bmap_read(fr);
-		disk.inode_read(fr);
-		disk.d_block_read(fr);
+		disk.disk_read(fr);
 	}
 	return true;
 }
@@ -44,11 +40,7 @@ bool FileSystem::writeSysFile()
 	}
 	else { // 文件已打开
 		// 把disk数据写入磁盘文件
-		disk.spb_write(fw);
-		disk.b_bmap_write(fw);
-		disk.i_bmap_write(fw);
-		disk.inode_write(fw);
-		disk.d_block_write(fw);
+		disk.disk_write(fw);
 	}
 	return true;
 }
@@ -89,12 +81,14 @@ void FileSystem::closeSysFile()
 {
 	fclose(fr);
 	fclose(fw);
+	fr = NULL;
+	fw = NULL;
 }
 
 bool FileSystem::formatSysFile()
 {
 	if (doFormat) {
-		disk.format(); // 格式化disk
+		disk.disk_format(); // 格式化disk
 		return writeSysFile(); // 把格式化的disk写入磁盘文件
 	}
 	return true;
