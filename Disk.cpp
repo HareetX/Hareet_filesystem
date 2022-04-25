@@ -287,6 +287,11 @@ Inode_Label::Inode_Label(): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP + B
 	}
 }
 
+//Inode_Label::~Inode_Label()
+//{
+//	delete inode;
+//}
+
 void Inode_Label::format()
 {
 	for (int i = 0; i < INODE_NUM; i++) {

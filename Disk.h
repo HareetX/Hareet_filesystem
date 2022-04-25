@@ -146,6 +146,7 @@ private:
 	Inode inode[INODE_NUM];
 public:
 	Inode_Label();
+	//~Inode_Label();
 
 	// 格式化Inode表
 	virtual void format();
