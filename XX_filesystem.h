@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Disk.h"
+
+
 using namespace std;
 
 // 磁盘文件相关宏定义
@@ -14,7 +15,7 @@ using namespace std;
 #define BLOCKS_PER_SUPERBLOCK 1 // 1个superblock占1个block
 #define BLOCKS_PER_IBITMAP 1 // 1个inode位图占1个block
 #define BLOCKS_PER_BBITMAP 3 // 1个block位图占3个block ：3 * 4 KB = 12 KB > 10 KB
-#define BLOCKS_PER_ILABEL 20 // 1个superblock占1个block
+#define BLOCKS_PER_ILABEL 20 // 1个Inode区占20个block
 
 // Inode相关宏定义
 #define BLOCK_INDEX 8 // Inode的直接块数
@@ -22,24 +23,20 @@ using namespace std;
 #define DIR_MODE 1 // 目录文件类型
 
 // 磁盘文件相关常量
-const int Sum_Size = BLOCK_SIZE * BLOCK_NUM + INODE_SIZE * INODE_NUM;
+const int Sum_Size = BLOCK_SIZE * BLOCK_NUM;
 const int Super_Block_Address  = 0;
 const int Inode_Bitmap_Address = Super_Block_Address  + BLOCK_SIZE * BLOCKS_PER_SUPERBLOCK;
 const int Block_Bitmap_Address = Inode_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_IBITMAP;
 const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_BBITMAP;
 const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
-const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP;
+const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP - BLOCKS_PER_ILABEL;
 
-// 文件系统相关变量
-bool isLogin = false; // 是否已登录
-char buffer[Sum_Size] = { 0 }; // 虚拟磁盘文件缓存
+#include "Disk.h"
+#include "ACI.h"
+#include "FileSystem.h"
 
-FILE* fr; // 虚拟文件的读指针
-FILE* fw; // 虚拟文件的写指针
-
-bool Format(); // 格式化虚拟磁盘文件
-void Initial(); // 初始化虚拟磁盘文件
-bool Install(); // 安装虚拟磁盘文件
-void Login(); // 用户登录
-
-void cmd(string args);
+bool Open(FileSystem &fs); // 打开磁盘文件
+bool Format(FileSystem &fs); // 格式化虚拟磁盘文件
+//void Login(); // 用户登录
+//void cmd(string args);
+void Close(FileSystem& fs);
