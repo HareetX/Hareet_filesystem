@@ -18,6 +18,10 @@ int main() {
 		return -1;
 	}// 格式化成功
 
+	Dentry dentry(0, FILE_MODE, "abcd.txt");
+	dentry.setName("abd.txt");
+	dentry.renewSize();
+
 	////Inode_Label il;
 	////Disk d;
 	//FileSystem f;

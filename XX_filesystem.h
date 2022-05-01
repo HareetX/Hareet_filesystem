@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
-
+#include <vector>
 
 using namespace std;
 
@@ -33,6 +33,7 @@ const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - B
 
 #include "Disk.h"
 #include "ACI.h"
+#include "Directory.h"
 #include "FileSystem.h"
 
 bool Open(FileSystem &fs); // 打开磁盘文件

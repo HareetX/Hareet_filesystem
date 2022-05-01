@@ -6,7 +6,8 @@ class FileSystem :
 {
 private:
     // 文件系统相关变量
-    Disk disk;
+    Disk disk; // 系统内的磁盘信息
+    vector<Directory> dirGroup; // 目录组
 
     FILE* fr; // 虚拟文件的读指针
     FILE* fw; // 虚拟文件的写指针
@@ -14,12 +15,14 @@ private:
     bool isLogin; // 是否已登录
     bool doFormat; // 是否需要格式化
 
+    int cur_dir; // 当前目录序号
+
 public:
     FileSystem();
 
-    // 调试用
-    void f_read(FILE* fpr);
-    void f_write(FILE* fpw);
+    //// 调试用
+    //void f_read(FILE* fpr);
+    //void f_write(FILE* fpw);
 
     /*
     * 虚拟磁盘文件存取控制接口
@@ -35,10 +38,24 @@ public:
     bool formatSysFile(); // 格式化磁盘文件
 
     /*
+    * 目录组与系统磁盘交互接口
+    */
+    void readDirGroup();
+    void writeDirGroup();
+
+    /*
     * 用户与文件系统交互接口
     */
     // 格式化相关
     void needFormat(bool doFormat); // 根据传入参数，修改是否需要格式化的标志
     bool isFormat(); // 传出文件系统格式化需求
+
+    // 目录组相关
+    void ls(); // 显示该目录下的所有文件信息（ls）
+    void cd(); // 转到该目录（cd）
+    // 在该目录下创建文件（touch）
+    // 删除该目录下的某文件（rm_f）
+    // 在该目录下创建目录（mkdir）
+    // 删除该目录下的某目录（rm_rf）
 };
 

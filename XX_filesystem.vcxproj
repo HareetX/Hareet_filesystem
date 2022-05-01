@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ACI.cpp" />
+    <ClCompile Include="Directory.cpp" />
     <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="fs_funct.cpp" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACI.h" />
+    <ClInclude Include="Directory.h" />
     <ClInclude Include="Disk.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="XX_filesystem.h" />

@@ -3,21 +3,23 @@
 
 FileSystem::FileSystem()
 {
+	dirGroup.clear();
 	fr = NULL;
 	fw = NULL;
 	isLogin = false;
 	doFormat = false;
+	cur_dir = 0;
 }
 
-void FileSystem::f_read(FILE* fpr)
-{
-	fr = fpr;
-}
-
-void FileSystem::f_write(FILE* fpw)
-{
-	fw = fpw;
-}
+//void FileSystem::f_read(FILE* fpr)
+//{
+//	fr = fpr;
+//}
+//
+//void FileSystem::f_write(FILE* fpw)
+//{
+//	fw = fpw;
+//}
 
 bool FileSystem::readSysFile()
 {
