@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -139,9 +139,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ACI.cpp" />
+    <ClCompile Include="Directory.cpp" />
+    <ClCompile Include="Disk.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="fs_funct.cpp" />
     <ClCompile Include="XX_filesystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ACI.h" />
+    <ClInclude Include="Directory.h" />
+    <ClInclude Include="Disk.h" />
+    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="XX_filesystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
