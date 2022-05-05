@@ -6,7 +6,7 @@ class Dentry
 private:
 	//int NO;
 	
-	int dentry_size; // 本目录项的长度
+	size_t dentry_size; // 本目录项的长度
 	int i_index; // 文件inode
 	int f_mode; // 文件类型
 	string f_name; // 文件名
@@ -27,14 +27,14 @@ public:
 	int getIndex();
 	int getMode();
 	string getName();
-	int getSize();
+	size_t getSize();
 };
 
 class Directory
 {
 private:
 	string dir_name; // 目录名
-	int dentry_num; // 包含目录项的个数
+	size_t dentry_num; // 包含目录项的个数
 	Directory* parent_dir; // 上级目录
 	vector<Dentry> dentryGroup; // 目录项组
 
@@ -49,7 +49,7 @@ public:
 	
 	// 获得目录属性的接口
 	string getName();
-	int getDentryNum();
+	size_t getDentryNum();
 	Directory* getParentDir();
 	// ...
 	

@@ -96,6 +96,40 @@ bool FileSystem::formatSysFile()
 	return true;
 }
 
+void FileSystem::readDirGroup()
+{
+
+}
+
+void FileSystem::writeDirGroup()
+{
+
+}
+
+void FileSystem::ls()
+{
+}
+
+void FileSystem::cd()
+{
+}
+
+void FileSystem::touch()
+{
+}
+
+void FileSystem::rm_f()
+{
+}
+
+void FileSystem::mkdir()
+{
+}
+
+void FileSystem::rm_rf()
+{
+}
+
 void FileSystem::needFormat(bool doFormat)
 {
 	this->doFormat = doFormat;

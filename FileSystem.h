@@ -53,9 +53,9 @@ public:
     // 目录组相关
     void ls(); // 显示该目录下的所有文件信息（ls）
     void cd(); // 转到该目录（cd）
-    // 在该目录下创建文件（touch）
-    // 删除该目录下的某文件（rm_f）
-    // 在该目录下创建目录（mkdir）
-    // 删除该目录下的某目录（rm_rf）
+    void touch(); // 在该目录下创建文件（touch）
+    void rm_f();// 删除该目录下的某文件（rm_f）
+    void mkdir();// 在该目录下创建目录（mkdir）
+    void rm_rf();// 删除该目录下的某目录（rm_rf）
 };
 

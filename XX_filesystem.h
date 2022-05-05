@@ -1,7 +1,7 @@
 #pragma once
+#include <vector>
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -36,8 +36,8 @@ const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - B
 #include "Directory.h"
 #include "FileSystem.h"
 
-bool Open(FileSystem &fs); // 打开磁盘文件
-bool Format(FileSystem &fs); // 格式化虚拟磁盘文件
+bool Open(FileSystem& fs); // 打开磁盘文件
+bool Format(FileSystem& fs); // 格式化虚拟磁盘文件
 //void Login(); // 用户登录
 //void cmd(string args);
 void Close(FileSystem& fs);
