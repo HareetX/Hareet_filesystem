@@ -1,6 +1,8 @@
 #pragma once
-#include "XX_filesystem.h"
-
+//#include "XX_filesystem.h"
+#include "ACI.h"
+#include "Directory.h"
+//#include "FileSystem.h"
 // Block
 class Block
 {
@@ -46,6 +48,7 @@ public:
 
 	virtual void block_read(FILE* fpr); // 读入数据块
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
+
 };
 
 class Superblock :
@@ -136,6 +139,21 @@ public:
 	// Inode接口
 	int getI_No(); // 获得Inode编号
 	void setI_No(int No); // 设置Inode编号
+
+	int getF_Mode(); // 获得文件类型
+	void setF_Mode(int mode); // 设置文件类型
+
+	int getF_Size(); // 获得文件大小
+	void setF_Size(int size); // 设置文件大小
+
+	int getC_Time(); // 获得创建时间
+	void setC_Time(int time); // 设置创建时间
+
+	bool addBlock(int index); // 增加可用块序号
+
+	char* getFile(char* buffer); // 返回该Inode指向的文件
+
+	int getIndex(int No); // 返回第No号块的块号
 };
 
 // Inode表
@@ -157,6 +175,8 @@ public:
 	// Inode_Label接口
 	virtual void block_read(FILE* fpr); // 读入Inode_Label
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
+
+	Inode* getInode(int No); // 返回第No号Inode
 };
 
 // Disk单元
@@ -182,22 +202,18 @@ public:
 	
 	void block_read(Block& b, FILE* fpr); // Disk单元内各块区数据读入
 	void disk_read(FILE* fpr); // Disk单元读入
-
-	//void spb_read(FILE* fr);// Superblock读入
-	//void b_bmap_read(FILE *fr);// Block位图读入
-	//void i_bmap_read(FILE* fr);// Inode位图读入
-	//void inode_read(FILE* fr);// Inode表读入
-	//void d_block_read(FILE* fr);// 数据块缓存读入
-	
-	
+		
 	// 将Disk单元存入磁盘文件
 	
 	void block_write(Block& b, FILE* fpw); // Disk单元内各块区数据写出
 	void disk_write(FILE* fpw); // // Disk单元写出
 
-	//void spb_write(FILE* fw);// Superblock存入
-	//void b_bmap_write(FILE* fw);// Block位图存入
-	//void i_bmap_write(FILE* fw);// Inode位图存入
-	//void inode_write(FILE* fw);// Inode表存入
-	//void d_block_write(FILE* fw);// 数据块缓存存入
+	// Disk与目录的接口
+	Dentry dentry_read(int dentry_address); // 从数据块读取目录项
+	Dentry dentry_read(int dentry_address, char* buf); // 从数据块读取目录项
+	void dentry_write(int dentry_address, Dentry dentry); // 把目录项写入数据块
+	void dentry_write(int dentry_address, char* buf, Dentry dentry); // 把目录项写入数据块
+
+	Directory dir_read(int i_No); // 从buffer读取目录 TEST
+	void dir_write(int i_No, Directory dir); // 把目录写入buffer TEST
 };

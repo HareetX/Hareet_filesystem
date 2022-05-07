@@ -98,20 +98,73 @@ bool FileSystem::formatSysFile()
 
 void FileSystem::readDirGroup()
 {
-
+	Dentry dentry;
+	Directory dir = disk.dir_read(0);
+	dir.setName("root");
+	dir.setI_Index(0);
+	dir.setParentDir(NULL);
+	dirGroup.push_back(dir);
+	int j = 0;
+	while (1) {
+		for (int i = 0; i < dirGroup[j].getDentryNum(); i++) {
+			dentry = dirGroup[j].getDentry(i);
+			if (dentry.getMode() == DIR_MODE) {
+				int i_index = dentry.getIndex();
+				dir = disk.dir_read(i_index);
+				dir.setName(dentry.getName().c_str());
+				dir.setI_Index(i_index);
+				dir.setParentDir(&dirGroup[j]);
+				dirGroup.push_back(dir);
+			}
+		}
+		j++;
+		if (j == dirGroup.size()) {
+			break;
+		}
+	}
 }
 
 void FileSystem::writeDirGroup()
 {
-
+	Dentry dentry;
+	disk.dir_write(0, dirGroup[0]);
+	int k;
+	int d_num;
+	int dir_size = dirGroup.size();
+	int d_index;
+	for (int j = 0; j < dir_size; j++) {
+		d_num = dirGroup[j].getDentryNum();
+		for (int i = 0; i < d_num; i++) {
+			dentry = dirGroup[j].getDentry(i);
+			d_index = dentry.getIndex();
+			if (dentry.getMode() == DIR_MODE) {
+				for (k = 0; k < dir_size; k++) {
+					if (d_index == dirGroup[k].getI_Index()) {
+						break;
+					}
+				}
+				disk.dir_write(d_index, dirGroup[k]);
+			}
+		}
+	}
 }
 
 void FileSystem::ls()
 {
+	dirGroup[cur_dir].printDir();
 }
 
-void FileSystem::cd()
+void FileSystem::cd(int cur)
 {
+	if (cur == cur_dir) {
+		cout << "已在该目录下" << endl;
+	}
+	else if (cur < dirGroup.size() && cur >= 0) {
+		cur_dir = cur;
+	}
+	else {
+		cout << "没有找到该目录" << endl;
+	}
 }
 
 void FileSystem::touch()

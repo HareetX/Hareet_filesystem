@@ -1,4 +1,5 @@
-#include "Directory.h"
+//#include "Directory.h"
+#include "XX_filesystem.h"
 
 Dentry::Dentry(int index, int mode, const char* str)
 {
@@ -6,7 +7,7 @@ Dentry::Dentry(int index, int mode, const char* str)
 	i_index = index;
 	f_mode = mode;
 	f_name = str;
-	dentry_size = sizeof(i_index) + sizeof(f_mode) + f_name.length() + sizeof(dentry_size);
+	dentry_size = sizeof(i_index) + sizeof(f_mode) + f_name.length() + 1 + sizeof(dentry_size);
 }
 
 Dentry::Dentry()
@@ -35,7 +36,7 @@ void Dentry::setName(const char* str)
 
 void Dentry::renewSize()
 {
-	dentry_size = sizeof(i_index) + sizeof(f_mode) + f_name.length() + sizeof(dentry_size);
+	dentry_size = sizeof(i_index) + sizeof(f_mode) + f_name.length() + 1 + sizeof(dentry_size);
 }
 
 //void Dentry::setNo(int No)
@@ -53,7 +54,7 @@ int Dentry::getMode()
 	return f_mode;
 }
 
-size_t Dentry::getSize()
+int Dentry::getSize()
 {
 	return dentry_size;
 }
@@ -67,14 +68,36 @@ string Dentry::getName()
 Directory::Directory()
 {
 	dir_name = "\0";
+	i_index = -1; // 需要后续初始化
 	dentry_num = 0;
 	parent_dir = NULL;
 	dentryGroup.clear();
+	/*Dentry cur_dir(0, DIR_MODE, ".");
+	Dentry par_dir(0, DIR_MODE, "..");
+	add_Dentry(cur_dir);
+	add_Dentry(par_dir);*/
 }
+
+//Directory::Directory(int dir_type)
+//{
+//	dir_name = "\0";
+//	dentry_num = 0;
+//	parent_dir = NULL;
+//	dentryGroup.clear();
+//	Dentry cur_dir(0, DIR_MODE, ".");
+//	Dentry par_dir(0, DIR_MODE, "..");
+//	add_Dentry(cur_dir);
+//	add_Dentry(par_dir);
+//}
 
 void Directory::setName(const char* str)
 {
 	dir_name = str;
+}
+
+void Directory::setI_Index(int index)
+{
+	i_index = index;
 }
 
 void Directory::renewDentryNum()
@@ -92,6 +115,11 @@ string Directory::getName()
 	return dir_name;
 }
 
+int Directory::getI_Index()
+{
+	return i_index;
+}
+
 size_t Directory::getDentryNum()
 {
 	return dentry_num;
@@ -100,6 +128,11 @@ size_t Directory::getDentryNum()
 Directory* Directory::getParentDir()
 {
 	return parent_dir;
+}
+
+Dentry Directory::getDentry(int No)
+{
+	return dentryGroup[No];
 }
 
 void Directory::add_Dentry(int index, int mode, const char* str)
@@ -114,8 +147,21 @@ void Directory::add_Dentry(int index, int mode, const char* str)
 	dentry_num = dentryGroup.size();	// 更新目录项的个数	
 }
 
+void Directory::add_Dentry(Dentry dentry)
+{
+	dentryGroup.push_back(dentry);	// 将新增的目录项添加至目录项组尾部
+	dentry_num = dentryGroup.size();	// 更新目录项的个数
+}
+
 void Directory::del_Dentry(int No)
 {
 	dentryGroup.erase(dentryGroup.begin() + No - 1); // 删除第No个目录项
 	dentry_num = dentryGroup.size();	// 更新目录项的个数
+}
+
+void Directory::printDir()
+{
+	for (int i = 0; i < dentry_num; i++) {
+		cout << dentryGroup[i].getName() << "\t" << (dentryGroup[i].getMode() ? "目录文件" : "一般文件") << "\t" << dentryGroup[i].getSize() << "B" << endl;
+	}
 }

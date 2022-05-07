@@ -31,6 +31,10 @@ const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_
 const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
 const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP - BLOCKS_PER_ILABEL;
 
+// 目录相关宏定义
+#define ROOT 0 // 根目录标志
+#define DIR  1 // 一般目录标志
+
 #include "Disk.h"
 #include "ACI.h"
 #include "Directory.h"

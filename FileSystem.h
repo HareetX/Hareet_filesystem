@@ -41,7 +41,7 @@ public:
     * 目录组与系统磁盘交互接口
     */
     void readDirGroup();
-    void writeDirGroup();
+    void writeDirGroup(); // TEST
 
     /*
     * 用户与文件系统交互接口
@@ -50,9 +50,9 @@ public:
     void needFormat(bool doFormat); // 根据传入参数，修改是否需要格式化的标志
     bool isFormat(); // 传出文件系统格式化需求
 
-    // 目录组相关
+    // 目录组相关 TODO
     void ls(); // 显示该目录下的所有文件信息（ls）
-    void cd(); // 转到该目录（cd）
+    void cd(int cur); // 转到该目录（cd）
     void touch(); // 在该目录下创建文件（touch）
     void rm_f();// 删除该目录下的某文件（rm_f）
     void mkdir();// 在该目录下创建目录（mkdir）

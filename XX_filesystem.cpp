@@ -18,9 +18,16 @@ int main() {
 		return -1;
 	}// 格式化成功
 
-	Dentry dentry(0, FILE_MODE, "abcd.txt");
+	fs.readDirGroup();
+
+	fs.ls();
+
+	fs.writeDirGroup();
+
+	fs.ls();
+	/*Dentry dentry(0, FILE_MODE, "abcd.txt");
 	dentry.setName("abd.txt");
-	dentry.renewSize();
+	dentry.renewSize();*/
 
 	////Inode_Label il;
 	////Disk d;
