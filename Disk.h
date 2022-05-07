@@ -73,6 +73,8 @@ public:
 	// Superblock接口
 	virtual void block_read(FILE* fpr); // 读入Superblock
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
+
+	void use_renew();
 };
 
 class Block_Bitmap :
@@ -94,6 +96,9 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Block_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
+	int balloc();
+
+	void use_renew(int b_index);
 };
 
 class Inode_Bitmap :
@@ -114,6 +119,10 @@ public:
 	// Inode_Bitmap接口
 	virtual void block_read(FILE* fpr); // 读入Inode_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
+
+	int ialloc();
+
+	void use_renew(int i_index);
 };
 
 class Inode
@@ -177,6 +186,8 @@ public:
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
 	Inode* getInode(int No); // 返回第No号Inode
+
+	void use_renew(int i_index, int b_index, int mode, int f_size, Directory dir);
 };
 
 // Disk单元
@@ -208,6 +219,10 @@ public:
 	void block_write(Block& b, FILE* fpw); // Disk单元内各块区数据写出
 	void disk_write(FILE* fpw); // // Disk单元写出
 
+	// 返回位图情况
+	int d_balloc();
+	int d_ialloc();
+
 	// Disk与目录的接口
 	Dentry dentry_read(int dentry_address); // 从数据块读取目录项
 	Dentry dentry_read(int dentry_address, char* buf); // 从数据块读取目录项
@@ -216,4 +231,7 @@ public:
 
 	Directory dir_read(int i_No); // 从buffer读取目录 TEST
 	void dir_write(int i_No, Directory dir); // 把目录写入buffer TEST
+
+	// 占用空间时更新Disk
+	void use_renew(int b_index, int i_index, int mode, int f_size, Directory dir);
 };

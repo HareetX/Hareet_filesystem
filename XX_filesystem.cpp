@@ -19,11 +19,18 @@ int main() {
 	}// 格式化成功
 
 	fs.readDirGroup();
-
 	fs.ls();
 
 	fs.writeDirGroup();
+	fs.ls();
 
+	fs.touch("abc.txt");
+	fs.ls();
+
+	fs.mkdir("adgj");
+	fs.ls();
+
+	fs.cd(1);
 	fs.ls();
 	/*Dentry dentry(0, FILE_MODE, "abcd.txt");
 	dentry.setName("abd.txt");

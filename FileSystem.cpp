@@ -113,7 +113,7 @@ void FileSystem::readDirGroup()
 				dir = disk.dir_read(i_index);
 				dir.setName(dentry.getName().c_str());
 				dir.setI_Index(i_index);
-				dir.setParentDir(&dirGroup[j]);
+				dir.setParentDir(j);
 				dirGroup.push_back(dir);
 			}
 		}
@@ -149,6 +149,7 @@ void FileSystem::writeDirGroup()
 	}
 }
 
+
 void FileSystem::ls()
 {
 	dirGroup[cur_dir].printDir();
@@ -167,20 +168,70 @@ void FileSystem::cd(int cur)
 	}
 }
 
-void FileSystem::touch()
+void FileSystem::touch(const char* name)
 {
+	// 申请Inode，Block
+	int i_index = disk.d_ialloc();
+	int b_index = disk.d_balloc();
+	if (i_index == -1 || b_index == -1) {
+		cout << "磁盘空间不够，无法创建文件" << endl;
+		return;
+	}	
+	
+	// 在当前目录添加相应的目录项
+	Dentry f_dentry(i_index, FILE_MODE, 0, name);
+	dirGroup[cur_dir].add_Dentry(f_dentry);
+
+	// 在Inode中，目录文件大小要更新
+	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
+	disk.use_renew(b_index, i_index, FILE_MODE, 0, dirGroup[cur_dir]);
+	
+	// 将当前目录写回数据块
+	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
 void FileSystem::rm_f()
 {
+	// 在当前目录删除相应的目录项
+	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
+	// 将当前目录写回数据块
 }
 
-void FileSystem::mkdir()
+void FileSystem::mkdir(const char* name)
 {
+	// 申请Inode，Block
+	int i_index = disk.d_ialloc();
+	int b_index = disk.d_balloc();
+	if (i_index == -1 || b_index == -1) {
+		cout << "磁盘空间不够，无法创建文件" << endl;
+		return;
+	}
+
+	// 在当前目录添加相应的目录项
+	Directory dir;
+	dir.setName(name);
+	dir.setI_Index(i_index);
+	dir.setParentDir(cur_dir);
+
+	dirGroup.push_back(dir);
+
+	int dir_size = dir.getDirSize();
+
+	Dentry dir_dentry(i_index, DIR_MODE, dir_size, name);
+	dirGroup[cur_dir].add_Dentry(dir_dentry);
+
+	// 在Inode中，目录文件大小要更新
+	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
+	disk.use_renew(b_index, i_index, FILE_MODE, dir_size, dirGroup[cur_dir]);
+
+	// 将当前目录写回数据块
+	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
+	disk.dir_write(i_index, dir);
 }
 
 void FileSystem::rm_rf()
 {
+	// 注意：删除目录要把该目录下所有文件都删除（可能用到递归函数）
 }
 
 void FileSystem::needFormat(bool doFormat)
