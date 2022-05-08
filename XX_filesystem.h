@@ -21,6 +21,7 @@ using namespace std;
 #define BLOCK_INDEX 8 // Inode的直接块数
 #define FILE_MODE 0 // 普通文件类型
 #define DIR_MODE 1 // 目录文件类型
+#define OTHER_MODE 2 // 其他文件类型
 
 // 磁盘文件相关常量
 const int Sum_Size = BLOCK_SIZE * BLOCK_NUM;

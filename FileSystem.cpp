@@ -190,12 +190,29 @@ void FileSystem::touch(const char* name)
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
-void FileSystem::rm_f()
+void FileSystem::rm_f(int i_index)
 {
 	// 在当前目录删除相应的目录项
+	int i;
+	int d_num = dirGroup[cur_dir].getDentryNum();
+	for (i = 0; i < d_num; i++) {
+		if (dirGroup[cur_dir].getDentry(i).getIndex() == i_index) {
+			break;
+		}
+	}
+	if (i == d_num) {
+		cout << "未找到相应文件" << endl;
+		return;
+	}
+	dirGroup[cur_dir].del_Dentry(i);
+	
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
+	disk.free_renew(i_index, dirGroup[cur_dir]);
+	
 	// 将当前目录写回数据块
+	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
+
 
 void FileSystem::mkdir(const char* name)
 {
@@ -229,9 +246,52 @@ void FileSystem::mkdir(const char* name)
 	disk.dir_write(i_index, dir);
 }
 
-void FileSystem::rm_rf()
+void FileSystem::rm_rf(int i_index)
 {
 	// 注意：删除目录要把该目录下所有文件都删除（可能用到递归函数）
+	// 在当前目录找到对应的目录项
+	int i;
+	int cur = cur_dir;
+	int dir;
+	int d_num = dirGroup[cur_dir].getDentryNum();
+	for (i = 0; i < d_num; i++) {
+		if (dirGroup[cur_dir].getDentry(i).getIndex() == i_index) {
+			break;
+		}
+	}
+	if (i == d_num) {
+		cout << "未找到相应文件" << endl;
+		return;
+	}
+	
+
+	// 找到要删除的目录
+	for (dir = 0; dir < dirGroup.size(); dir++) {
+		if (dirGroup[dir].getI_Index() == i_index) {
+			break;
+		}
+	}
+	cd(dir);
+	Dentry dentry;
+	for (int i = 0; i < dirGroup[cur_dir].getDentryNum(); i++) {
+		dentry = dirGroup[cur_dir].getDentry(i);
+		if (dentry.getMode() == FILE_MODE) {
+			rm_f(dentry.getIndex());
+		}
+		else if (dentry.getMode() == DIR_MODE) {
+			rm_rf(dentry.getIndex());
+		}
+	}
+	cd(cur);
+
+	// 删除对应目录项和目录
+	dirGroup[cur_dir].del_Dentry(i);
+	dirGroup.erase(dirGroup.begin() + dir);
+
+	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
+	disk.free_renew(i_index, dirGroup[cur_dir]);
+	// 将当前目录写回数据块
+	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
 void FileSystem::needFormat(bool doFormat)

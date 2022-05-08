@@ -84,8 +84,8 @@ Directory::Directory()
 	dentry_num = 2;
 	parent_dir = 0;
 	dentryGroup.clear();
-	Dentry cur_dir(0, FILE_MODE, 0, ".");
-	Dentry par_dir(0, FILE_MODE, 0, "..");
+	Dentry cur_dir(0, OTHER_MODE, 0, ".");
+	Dentry par_dir(0, OTHER_MODE, 0, "..");
 	add_Dentry(cur_dir);
 	add_Dentry(par_dir);
 }
@@ -182,7 +182,7 @@ void Directory::add_Dentry(Dentry dentry)
 
 void Directory::del_Dentry(int No)
 {
-	dentryGroup.erase(dentryGroup.begin() + No - 1); // 删除第No个目录项
+	dentryGroup.erase(dentryGroup.begin() + No); // 删除第No号目录项
 	dentry_num = dentryGroup.size();	// 更新目录项的个数
 }
 

@@ -21,8 +21,8 @@ int main() {
 	fs.readDirGroup();
 	fs.ls();
 
-	fs.writeDirGroup();
-	fs.ls();
+	/*fs.writeDirGroup();
+	fs.ls();*/
 
 	fs.touch("abc.txt");
 	fs.ls();
@@ -30,8 +30,22 @@ int main() {
 	fs.mkdir("adgj");
 	fs.ls();
 
-	fs.cd(1);
+	/*fs.cd(1);
+	fs.ls();*/
+
+	fs.rm_f(1);
 	fs.ls();
+
+	fs.cd(1);
+	fs.touch("dfg.txt");
+	fs.ls();
+
+	fs.cd(0);
+	fs.ls();
+
+	fs.rm_rf(2);
+	fs.ls();
+
 	/*Dentry dentry(0, FILE_MODE, "abcd.txt");
 	dentry.setName("abd.txt");
 	dentry.renewSize();*/

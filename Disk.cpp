@@ -115,6 +115,12 @@ void Superblock::use_renew()
 	free_Inode_Num--;
 }
 
+void Superblock::free_renew(int b_cout)
+{
+	free_Block_Num += b_cout;
+	free_Inode_Num++;
+}
+
 Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
 {
 	for (int i = 0; i < Block_Num; i++) {
@@ -187,6 +193,11 @@ int Block_Bitmap::balloc()
 void Block_Bitmap::use_renew(int b_index)
 {
 	b_isUsed[b_index] = 1;
+}
+
+void Block_Bitmap::free_renew(int b_index)
+{
+	b_isUsed[b_index] = 0;
 }
 
 
@@ -262,6 +273,11 @@ int Inode_Bitmap::ialloc()
 void Inode_Bitmap::use_renew(int i_index)
 {
 	i_isUsed[i_index] = 1;
+}
+
+void Inode_Bitmap::free_renew(int i_index)
+{
+	i_isUsed[i_index] = 0;
 }
 
 Inode::Inode(int No, int mode, int size, int time_c, int index[BLOCK_INDEX])
@@ -452,8 +468,15 @@ void Inode_Label::use_renew(int i_index, int b_index, int mode, int f_size, Dire
 	inode[i_index].addBlock(b_index); // 新申请的Inode一定是空的
 
 	// 更新目录文件大小
-	Inode dir_inode = inode[dir.getI_Index()];
-	dir_inode.setF_Size(dir.getDirSize());
+	inode[dir.getI_Index()].setF_Size(dir.getDirSize());
+}
+
+void Inode_Label::free_renew(int i_index, Directory dir)
+{
+	// 更新文件Inode
+	inode[i_index].format();
+	// 更新目录文件大小
+	inode[dir.getI_Index()].setF_Size(dir.getDirSize());
 }
 
 
@@ -620,5 +643,22 @@ void Disk::use_renew(int b_index, int i_index, int mode, int f_size, Directory d
 	b_bmap.use_renew(b_index);
 	i_bmap.use_renew(i_index);
 	i_label.use_renew(i_index, b_index, mode, f_size, dir);
+}
+
+void Disk::free_renew(int i_index, Directory dir)
+{
+	Inode* inode = i_label.getInode(i_index);
+	int b_index = -1;
+	int b_count = 0;
+	for (int i = 0; i < BLOCK_INDEX; i++) {
+		b_index = inode->getIndex(i);
+		if (b_index != -1) {
+			b_bmap.free_renew(b_index);
+			b_count++;
+		}
+	}
+	spb.free_renew(b_count);
+	i_bmap.free_renew(i_index);
+	i_label.free_renew(i_index, dir);
 }
 

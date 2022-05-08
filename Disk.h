@@ -75,6 +75,7 @@ public:
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
 	void use_renew();
+	void free_renew(int b_cout);
 };
 
 class Block_Bitmap :
@@ -99,6 +100,7 @@ public:
 	int balloc();
 
 	void use_renew(int b_index);
+	void free_renew(int b_index);
 };
 
 class Inode_Bitmap :
@@ -123,6 +125,7 @@ public:
 	int ialloc();
 
 	void use_renew(int i_index);
+	void free_renew(int i_index);
 };
 
 class Inode
@@ -188,6 +191,7 @@ public:
 	Inode* getInode(int No); // 返回第No号Inode
 
 	void use_renew(int i_index, int b_index, int mode, int f_size, Directory dir);
+	void free_renew(int i_index, Directory dir);
 };
 
 // Disk单元
@@ -234,4 +238,6 @@ public:
 
 	// 占用空间时更新Disk
 	void use_renew(int b_index, int i_index, int mode, int f_size, Directory dir);
+	// 释放空间时更新Disk
+	void free_renew(int i_index, Directory dir);
 };
