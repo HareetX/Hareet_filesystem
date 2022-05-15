@@ -1,7 +1,13 @@
 #pragma once
+#include <vector>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <conio.h>
+#include <stdio.h> 
+#include <cstdio>
+#include <sstream>
+
+
 
 using namespace std;
 
@@ -21,6 +27,7 @@ using namespace std;
 #define BLOCK_INDEX 8 // Inode的直接块数
 #define FILE_MODE 0 // 普通文件类型
 #define DIR_MODE 1 // 目录文件类型
+#define OTHER_MODE 2 // 其他文件类型
 
 // 磁盘文件相关常量
 const int Sum_Size = BLOCK_SIZE * BLOCK_NUM;
@@ -31,13 +38,16 @@ const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_
 const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
 const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP - BLOCKS_PER_ILABEL;
 
+// 目录相关宏定义
+#define ROOT 0 // 根目录标志
+#define DIR  1 // 一般目录标志
+
 #include "Disk.h"
 #include "ACI.h"
 #include "Directory.h"
 #include "FileSystem.h"
 
-bool Open(FileSystem &fs); // 打开磁盘文件
-bool Format(FileSystem &fs); // 格式化虚拟磁盘文件
-//void Login(); // 用户登录
-//void cmd(string args);
-void Close(FileSystem& fs);
+
+bool Open(FileSystem& fs); // 打开磁盘文件
+bool Format(FileSystem& fs); // 格式化虚拟磁盘文件
+void Close(FileSystem& fs); // 关闭磁盘文件

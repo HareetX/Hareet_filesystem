@@ -29,7 +29,7 @@ public:
     */
     bool readSysFile(); // 把磁盘文件数据读入disk
     bool writeSysFile(); // 把disk数据写入磁盘文件
-
+    
     // 打开磁盘文件：若文件存在，则正常打开；若文件不存在，创建磁盘文件再打开
     bool openSysFile();
     // 关闭磁盘文件，释放句柄
@@ -41,7 +41,8 @@ public:
     * 目录组与系统磁盘交互接口
     */
     void readDirGroup();
-    void writeDirGroup();
+    void writeDirGroup(); // TEST
+
 
     /*
     * 用户与文件系统交互接口
@@ -50,12 +51,18 @@ public:
     void needFormat(bool doFormat); // 根据传入参数，修改是否需要格式化的标志
     bool isFormat(); // 传出文件系统格式化需求
 
-    // 目录组相关
-    void ls(); // 显示该目录下的所有文件信息（ls）
-    void cd(); // 转到该目录（cd）
-    // 在该目录下创建文件（touch）
-    // 删除该目录下的某文件（rm_f）
-    // 在该目录下创建目录（mkdir）
-    // 删除该目录下的某目录（rm_rf）
+    // 登录接口
+    bool is_Login();
+    void Login();
+
+    // 目录组相关 TEST
+    void ls();// 显示该目录下的所有文件信息（ls）
+    void cd(int cur); // 转到该目录（cd）
+    void touch(const char* name); // 在该目录下创建文件（touch）
+    void rm_f(int i_index); // 删除该目录下的某文件（rm_f）
+    void mkdir(const char* name); // 在该目录下创建目录（mkdir）
+    void rm_rf(int i_index); // 删除该目录下的某目录（rm_rf）
+    void help(); // 显示帮助
+    void cmd(string args); // 输入指令
 };
 

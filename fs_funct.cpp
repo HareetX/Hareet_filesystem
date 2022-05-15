@@ -26,6 +26,11 @@ bool Format(FileSystem& fs)
 
 void Close(FileSystem& fs)
 {
+	fs.writeSysFile();
 	fs.closeSysFile();
 }
+
+
+
+
 
