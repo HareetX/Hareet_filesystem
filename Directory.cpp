@@ -1,3 +1,4 @@
+
 //#include "Directory.h"
 #include "XX_filesystem.h"
 
@@ -80,7 +81,7 @@ string Dentry::getName()
 Directory::Directory()
 {
 	dir_name = "\0";
-	i_index = -1; // ĞèÒªºóĞø³õÊ¼»¯
+	i_index = -1; // éœ€è¦åç»­åˆå§‹åŒ–
 	dentry_num = 2;
 	parent_dir = 0;
 	dentryGroup.clear();
@@ -170,28 +171,28 @@ void Directory::add_Dentry(int index, int mode, const char* str)
 	d.setName(str);
 	d.renewSize();
 	//Dentry d(int index, int mode, const char* str);
-	dentryGroup.push_back(d);	// ½«ĞÂÔöµÄÄ¿Â¼ÏîÌí¼ÓÖÁÄ¿Â¼Ïî×éÎ²²¿
-	dentry_num = dentryGroup.size();	// ¸üĞÂÄ¿Â¼ÏîµÄ¸öÊı	
+	dentryGroup.push_back(d);	// å°†æ–°å¢çš„ç›®å½•é¡¹æ·»åŠ è‡³ç›®å½•é¡¹ç»„å°¾éƒ¨
+	dentry_num = dentryGroup.size();	// æ›´æ–°ç›®å½•é¡¹çš„ä¸ªæ•°	
 }
 
 void Directory::add_Dentry(Dentry dentry)
 {
-	dentryGroup.push_back(dentry);	// ½«ĞÂÔöµÄÄ¿Â¼ÏîÌí¼ÓÖÁÄ¿Â¼Ïî×éÎ²²¿
-	dentry_num = dentryGroup.size();	// ¸üĞÂÄ¿Â¼ÏîµÄ¸öÊı
+	dentryGroup.push_back(dentry);	// å°†æ–°å¢çš„ç›®å½•é¡¹æ·»åŠ è‡³ç›®å½•é¡¹ç»„å°¾éƒ¨
+	dentry_num = dentryGroup.size();	// æ›´æ–°ç›®å½•é¡¹çš„ä¸ªæ•°
 }
 
 void Directory::del_Dentry(int No)
 {
-	dentryGroup.erase(dentryGroup.begin() + No); // É¾³ıµÚNoºÅÄ¿Â¼Ïî
-	dentry_num = dentryGroup.size();	// ¸üĞÂÄ¿Â¼ÏîµÄ¸öÊı
+	dentryGroup.erase(dentryGroup.begin() + No); // åˆ é™¤ç¬¬Noå·ç›®å½•é¡¹
+	dentry_num = dentryGroup.size();	// æ›´æ–°ç›®å½•é¡¹çš„ä¸ªæ•°
 }
 
 void Directory::printDir()
 {
 	for (int i = 0; i < dentry_num; i++) {
 		cout << dentryGroup[i].getName() << "\t" 
-			 << (dentryGroup[i].getMode() ? "Ä¿Â¼ÎÄ¼ş" : "Ò»°ãÎÄ¼ş") << "\t" 
-			 << dentryGroup[i].getF_Size() << "B"  // ´òÓ¡µÄ²»Ó¦¸ÃÊÇÄ¿Â¼ÏîµÄ´óĞ¡£¬¶øÊÇÎÄ¼ş´óĞ¡
+			 << (dentryGroup[i].getMode() ? "ç›®å½•æ–‡ä»¶" : "ä¸€èˆ¬æ–‡ä»¶") << "\t" 
+			 << dentryGroup[i].getF_Size() << "B"  // æ‰“å°çš„ä¸åº”è¯¥æ˜¯ç›®å½•é¡¹çš„å¤§å°ï¼Œè€Œæ˜¯æ–‡ä»¶å¤§å°
 			 << endl;
 	}
 }
