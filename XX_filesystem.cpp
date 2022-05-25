@@ -24,8 +24,8 @@ int main() {
 
 	while (1){
 		if (fs.is_Login()) { // 已登录
+			fs.printUserPos();
 			string args = "\0"; 
-			
 			getline(cin, args);
 			if (!fs.cmd(args)) { // 如果输入 q ，则返回false，退出循环
 				break;
@@ -33,7 +33,7 @@ int main() {
 		}
 		else { // 未登录
 			fs.Login(); // 登录
-			cin.ignore();
+			fs.help();
 		}
 	}
 	

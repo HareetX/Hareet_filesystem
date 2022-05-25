@@ -21,6 +21,8 @@ bool Format(FileSystem& fs)
 			fs.needFormat(false);
 		}
 	}
+	system("pause");
+	system("cls");
 	return fs.formatSysFile();
 }
 

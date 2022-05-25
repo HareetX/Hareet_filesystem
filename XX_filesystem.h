@@ -6,6 +6,7 @@
 #include <stdio.h> 
 #include <cstdio>
 #include <sstream>
+#include <windows.h>
 
 
 
@@ -50,4 +51,5 @@ const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - B
 
 bool Open(FileSystem& fs); // 打开磁盘文件
 bool Format(FileSystem& fs); // 格式化虚拟磁盘文件
+
 void Close(FileSystem& fs); // 关闭磁盘文件

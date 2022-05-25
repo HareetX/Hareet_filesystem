@@ -10,6 +10,13 @@ FileSystem::FileSystem()
 	isLogin = false;
 	doFormat = false;
 	cur_dir = 0;
+	userGroup.clear();
+
+	memset(Cur_Host_Name, 0, sizeof(Cur_Host_Name));
+	DWORD k = 100;
+	GetComputerName(Cur_Host_Name, &k);
+	userGroup.push_back(User("root", "root"));
+	cur_user = -1; // 系统一开始未登录
 }
 
 bool FileSystem::is_Login()
@@ -18,42 +25,42 @@ bool FileSystem::is_Login()
 	return isLogin;
 }
 
-void inUsername(char username[])	//输入用户名
-{
-	
-	cout << "username: " ;
-	cin >> username;
-}
+//void inUsername(char username[])	//输入用户名
+//{
+//	
+//	cout << "username: " ;
+//	cin >> username;
+//}
 
-void inPasswd(char passwd[])	//输入密码
-{
-	cout << "passwd: ";
-	cin >> passwd;
-	//cin.ignore();
-	//int i = 0;
-	//while (true)
-	//{
-	//	passwd[i] = getch();     //只能接收一个动作 
-	//	if (passwd[i] == '\r')     //回车键表示\r\n 
-	//	{
-	//		break;
-	//	}
+//void inPasswd(char passwd[])	//输入密码
+//{
+//	cout << "passwd: ";
+//	cin >> passwd;
+//	//cin.ignore();
+//	//int i = 0;
+//	//while (true)
+//	//{
+//	//	passwd[i] = getch();     //只能接收一个动作 
+//	//	if (passwd[i] == '\r')     //回车键表示\r\n 
+//	//	{
+//	//		break;
+//	//	}
+//
+//	//}
+//}
 
-	//}
-}
-
-bool check(char username[], char passwd[]) //核对用户名，密码
-{	
-
-	if ((strcmp(username, "root") == 0) && (strcmp(passwd, "root") == 0)) {
-
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
+//bool check(char username[], char passwd[]) //核对用户名，密码
+//{	
+//
+//	if ((strcmp(username, "root") == 0) && (strcmp(passwd, "root") == 0)) {
+//
+//		return 1;
+//	}
+//	else
+//	{
+//		return 0;
+//	}
+//}
 
 
 void FileSystem::Login()	//登录界面
@@ -62,17 +69,41 @@ void FileSystem::Login()	//登录界面
 	cout << "本文件系统只有root用户，请输入用户名root以及密码root登录:" << endl;
 	char username[100] = { 0 };
 	char passwd[100] = { 0 };
-	inUsername(username);	//输入用户名
-	inPasswd(passwd);		//输入用户密码
-	
-	if (check(username, passwd)) {	//核对用户名和密码
+	//inUsername(username);	
+	// 输入用户名
+	cout << "username: ";
+	cin >> username;
+	//inPasswd(passwd);		
+	// 输入用户密码
+	cout << "passwd: ";
+	cin >> passwd;
+
+	//核对用户名和密码
+	int usersize = userGroup.size();
+	for (int i = 0; i < usersize; i++) {
+		if (userGroup[i].check(username, passwd)) {
+			isLogin = true;
+			cur_user = i;
+			break;
+		}
+		else {
+			isLogin = false;
+		}
+	}
+	if (!isLogin) {
+		cout << "用户名或密码错误" << endl;
+	}
+	/*if (check(username, passwd)) {	
 		isLogin = true;
 		
 	}
 	else {
 		isLogin = false;
 		
-	}
+	}*/
+	cin.ignore();
+	system("pause");
+	system("cls");
 }
 
 
@@ -241,6 +272,21 @@ bool FileSystem::check_fname(const char* name, int mode)
 int FileSystem::find_file(const char* name, int mode)
 {
 	return dirGroup[cur_dir].find_file(name, mode);
+}
+
+void FileSystem::printUserPos()
+{
+	cout << userGroup[cur_user].getUsername() << "@" << Cur_Host_Name << ": " << getDirPos(cur_dir) << "$";
+}
+
+string FileSystem::getDirPos(int cur)
+{
+	if (cur == 0) {
+		return dirGroup[cur].getName();
+	}
+	else {
+		return getDirPos(dirGroup[cur].getParentDir()) + "/" + dirGroup[cur].getName();
+	}
 }
 
 void FileSystem::ls()
@@ -420,13 +466,16 @@ bool FileSystem::isFormat()
 
 void FileSystem::help()	//显示所有命令清单 
 {
-	cout << "ls     - 显示当前目录清单" << endl;
-	cout << "cd     - 转入目录" << endl;
-	cout << "touch  - 在该目录下创建文件" << endl;
-	cout << "mkdir  - 创建目录" << endl;
-	cout << "rm -f  - 删除该目录下的文件" << endl;
-	cout << "rm -rf - 删除该目录下的目录" << endl;
-	cout << "q      - 退出文件系统" << endl;
+	cout << "***************************************" << endl;
+	cout << "*    ls     - 显示当前目录清单        *" << endl;
+	cout << "*    cd     - 转入目录                *" << endl;
+	cout << "*    touch  - 在该目录下创建文件      *" << endl;
+	cout << "*    mkdir  - 创建目录                *" << endl;
+	cout << "*    rm -f  - 删除该目录下的文件      *" << endl;
+	cout << "*    rm -rf - 删除该目录下的目录      *" << endl;
+	cout << "*    open   - 打开文件（可读写文件）  *" << endl;
+	cout << "*    q      - 退出文件系统            *" << endl;
+	cout << "***************************************" << endl;
 	return;
 }
 
@@ -565,4 +614,29 @@ void FileSystem::openfile(const char* name)
 		}
 		dirGroup[cur_dir].setDentryFsize(name, disk.file_size(i_index));
 	}
+}
+
+User::User(string username, string password)
+{
+	this->username = username;
+	this->password = password;
+}
+
+void User::setUser(string username, string password)
+{
+	this->username = username;
+	this->password = password;
+}
+
+bool User::check(string username, string password)
+{
+	if (username == this->username && password == this->password) {
+		return true;
+	}
+	return false;
+}
+
+string User::getUsername()
+{
+	return username;
 }

@@ -1,6 +1,19 @@
 #pragma once
 #include "XX_filesystem.h"
 
+class User
+{
+private:
+    string username;
+    string password;
+public:
+    User(string username, string password);
+    void setUser(string username, string password);
+    bool check(string username, string password);
+
+    string getUsername();
+};
+
 class FileSystem :
     public ACI
 {
@@ -16,6 +29,10 @@ private:
     bool doFormat; // 是否需要格式化
 
     int cur_dir; // 当前目录序号
+
+    char Cur_Host_Name[110];
+    vector<User> userGroup; // 用户组（本系统只有root用户，但考虑到未来扩展的情况，所以用vector）
+    int cur_user; // 当前用户序号
 
 public:
     FileSystem();
@@ -59,6 +76,10 @@ public:
     int find_dir(const char* name); // 根据目录名，从目录组中查找匹配的目录，返回索引
     int find_file(const char* name, int mode); // 根据文件名和文件类型，从当前目录找到对应的目录项，返回索引
     bool check_fname(const char* name, int mode); // 根据文件名和文件类型，检查当前目录的文件是否有重名
+    
+    string getDirPos(int cur); // 打印目录位置
+    void printUserPos(); // 登录后，打印用户所在目录
+
 
     void ls();// 显示该目录下的所有文件信息（ls）
     void cd(int cur); // 转到该目录（cd）
