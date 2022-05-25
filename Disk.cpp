@@ -493,8 +493,8 @@ void Disk::disk_format()
 	format(i_label);
 	format(d_block);
 
-	Dentry cur_dir(0, FILE_MODE, 0, "."); // 暂时设置为一般文件类型，作测试文件
-	Dentry par_dir(0, FILE_MODE, 0, ".."); // 暂时设置为一般文件类型，作测试文件
+	Dentry cur_dir(0, OTHER_MODE, 0, "."); // 暂时设置为一般文件类型，作测试文件
+	Dentry par_dir(0, OTHER_MODE, 0, ".."); // 暂时设置为一般文件类型，作测试文件
 
 	*((size_t*)d_block.buffer_return()) = 2;
 	dentry_write(sizeof(size_t), cur_dir);
@@ -540,6 +540,58 @@ int Disk::d_balloc()
 int Disk::d_ialloc()
 {
 	return i_bmap.ialloc();
+}
+
+char* Disk::file_read(int i_index)
+{
+	Inode* inode = i_label.getInode(i_index);
+	int fsize = inode->getF_Size();
+	char* buffer = inode->getFile(d_block.buffer_return());
+	buffer[fsize] = '\0';
+	return buffer;
+}
+
+int Disk::file_size(int i_index)
+{
+	return i_label.getInode(i_index)->getF_Size();
+}
+
+bool Disk::file_write(int i_index, const char* buf)
+{
+	Inode* inode = i_label.getInode(i_index);
+	int fsize = inode->getF_Size();
+	int blocks = (fsize + (int)strlen(buf)) / BLOCK_SIZE - fsize / BLOCK_SIZE;
+	vector<int> b_index;
+	b_index.clear();
+	if (blocks > 0) { // 需要申请新的block
+		if (fsize / BLOCK_SIZE + blocks > BLOCK_INDEX) {
+			cout << "文件过大，无法写入文件" << endl;
+			return false;
+		}
+		for (int i = 0; i < blocks; i++) {
+			b_index.push_back(b_bmap.balloc());
+			if (b_index[i] == -1) {
+				cout << "磁盘空间已满，无法写入文件" << endl;
+				return false;
+			}
+		}// 申请到所有需要的blocks
+		for (int i = 0; i < blocks; i++) {
+			b_bmap.use_renew(b_index[i]);
+			inode->addBlock(b_index[i]);
+		}
+	}
+	inode->setF_Size(fsize + strlen(buf));
+	char* buffer = inode->getFile(d_block.buffer_return()); // 用到了getFile函数，要注意delete
+	memcpy(buffer + fsize, buf, strlen(buf) + 1);
+	for (int i = 0; i < BLOCK_INDEX; i++) {
+		int i_index = inode->getIndex(i);
+		if (i_index != -1) {
+			int b_address = i_index * BLOCK_SIZE;
+			memcpy(d_block.buffer_return() + b_address, buffer + i * BLOCK_SIZE, BLOCK_SIZE); //
+		}
+	}
+	delete[] buffer;
+	return true;
 }
 
 
@@ -628,10 +680,11 @@ void Disk::dir_write(int i_No, Directory dir)
 		dentry_write(d_address, dir_buf, dentry);
 		d_size = dentry.getSize();
 	}
+
 	for (int i = 0; i < BLOCK_INDEX; i++) {
 		int i_index = inode->getIndex(i);
 		if (i_index != -1) {
-			int b_address = inode->getIndex(i) * BLOCK_SIZE;
+			int b_address = i_index * BLOCK_SIZE;
 			memcpy(d_block.buffer_return() + b_address, dir_buf + i * BLOCK_SIZE, BLOCK_SIZE);
 		}
 	}

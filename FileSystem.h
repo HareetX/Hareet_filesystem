@@ -29,7 +29,7 @@ public:
     */
     bool readSysFile(); // 把磁盘文件数据读入disk
     bool writeSysFile(); // 把disk数据写入磁盘文件
-
+    
     // 打开磁盘文件：若文件存在，则正常打开；若文件不存在，创建磁盘文件再打开
     bool openSysFile();
     // 关闭磁盘文件，释放句柄
@@ -51,13 +51,23 @@ public:
     void needFormat(bool doFormat); // 根据传入参数，修改是否需要格式化的标志
     bool isFormat(); // 传出文件系统格式化需求
 
+    // 登录接口
+    bool is_Login();
+    void Login();
+
     // 目录组相关 TEST
-    void ls(); // 显示该目录下的所有文件信息（ls）
+    int find_dir(const char* name); // 根据目录名，从目录组中查找匹配的目录，返回索引
+    int find_file(const char* name, int mode); // 根据文件名和文件类型，从当前目录找到对应的目录项，返回索引
+    bool check_fname(const char* name, int mode); // 根据文件名和文件类型，检查当前目录的文件是否有重名
+
+    void ls();// 显示该目录下的所有文件信息（ls）
     void cd(int cur); // 转到该目录（cd）
     void touch(const char* name); // 在该目录下创建文件（touch）
-    void rm_f(int i_index);// 删除该目录下的某文件（rm_f）
-    void mkdir(const char* name);// 在该目录下创建目录（mkdir）
-    void rm_rf(int i_index);// 删除该目录下的某目录（rm_rf）
-
+    void rm_f(const char* name); // 删除该目录下的某文件（rm_f）
+    void mkdir(const char* name); // 在该目录下创建目录（mkdir）
+    void rm_rf(const char* name); // 删除该目录下的某目录（rm_rf）
+    void openfile(const char* name); // 打开一般文件（open）
+    void help(); // 显示帮助
+    bool cmd(string args); // 输入指令
 };
 

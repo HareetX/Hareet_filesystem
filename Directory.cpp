@@ -1,3 +1,4 @@
+
 //#include "Directory.h"
 #include "XX_filesystem.h"
 
@@ -122,6 +123,16 @@ void Directory::setParentDir(int dir)
 	parent_dir = dir;
 }
 
+void Directory::setDentryFsize(const char* name, int fsize)
+{
+	int dentry_index = find_file(name, FILE_MODE);
+	if (dentry_index == -1) {
+		cout << "未找到文件，无法更新文件大小" << endl;
+		return;
+	}
+	dentryGroup[dentry_index].setF_Size(fsize);
+}
+
 void Directory::dir_clear()
 {
 	dentry_num = 0;
@@ -162,6 +173,16 @@ Dentry Directory::getDentry(int No)
 	return dentryGroup[No];
 }
 
+int Directory::find_file(const char* name, int mode)
+{
+	for (int i = 0; i < dentry_num; i++) {
+		if (dentryGroup[i].getName() == name && dentryGroup[i].getMode() == mode) {
+			return i;
+		}
+	}
+	return -1; // 没找到文件，返回 -1
+}
+
 void Directory::add_Dentry(int index, int mode, const char* str)
 {
 	Dentry d;
@@ -189,9 +210,17 @@ void Directory::del_Dentry(int No)
 void Directory::printDir()
 {
 	for (int i = 0; i < dentry_num; i++) {
-		cout << dentryGroup[i].getName() << "\t" 
-			 << (dentryGroup[i].getMode() ? "目录文件" : "一般文件") << "\t" 
-			 << dentryGroup[i].getF_Size() << "B"  // 打印的不应该是目录项的大小，而是文件大小
-			 << endl;
+		cout << dentryGroup[i].getName() << "\t";
+		int mode = dentryGroup[i].getMode();
+		if (mode == DIR_MODE) {
+			cout << "目录文件";
+		}
+		else if(mode == FILE_MODE) {
+			cout << "一般文件";
+		}
+		else if (mode == OTHER_MODE) {
+			cout << "其他文件";
+		}
+		cout << "\t" << dentryGroup[i].getF_Size() << "B" << endl;
 	}
 }

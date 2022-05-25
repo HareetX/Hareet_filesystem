@@ -227,6 +227,12 @@ public:
 	int d_balloc();
 	int d_ialloc();
 
+	// 把文件内容从数据块读出
+	char* file_read(int i_index);
+	int file_size(int i_index);
+	// 把文件缓存写入数据块
+	bool file_write(int i_index, const char* buf);
+
 	// Disk与目录的接口
 	Dentry dentry_read(int dentry_address); // 从数据块读取目录项
 	Dentry dentry_read(int dentry_address, char* buf); // 从数据块读取目录项

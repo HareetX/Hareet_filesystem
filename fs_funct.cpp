@@ -26,7 +26,12 @@ bool Format(FileSystem& fs)
 
 void Close(FileSystem& fs)
 {
+	fs.writeDirGroup();
 	fs.writeSysFile();
 	fs.closeSysFile();
 }
+
+
+
+
 

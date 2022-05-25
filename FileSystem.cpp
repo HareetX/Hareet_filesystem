@@ -1,6 +1,7 @@
 #pragma once
 #include "XX_filesystem.h"
 
+
 FileSystem::FileSystem()
 {
 	dirGroup.clear();
@@ -10,6 +11,72 @@ FileSystem::FileSystem()
 	doFormat = false;
 	cur_dir = 0;
 }
+
+bool FileSystem::is_Login()
+{
+	//cout << isLogin;
+	return isLogin;
+}
+
+void inUsername(char username[])	//输入用户名
+{
+	
+	cout << "username: " ;
+	cin >> username;
+}
+
+void inPasswd(char passwd[])	//输入密码
+{
+	cout << "passwd: ";
+	cin >> passwd;
+	//cin.ignore();
+	//int i = 0;
+	//while (true)
+	//{
+	//	passwd[i] = getch();     //只能接收一个动作 
+	//	if (passwd[i] == '\r')     //回车键表示\r\n 
+	//	{
+	//		break;
+	//	}
+
+	//}
+}
+
+bool check(char username[], char passwd[]) //核对用户名，密码
+{	
+
+	if ((strcmp(username, "root") == 0) && (strcmp(passwd, "root") == 0)) {
+
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+void FileSystem::Login()	//登录界面
+{
+	 //只计划做一名用户为root
+	cout << "本文件系统只有root用户，请输入用户名root以及密码root登录:" << endl;
+	char username[100] = { 0 };
+	char passwd[100] = { 0 };
+	inUsername(username);	//输入用户名
+	inPasswd(passwd);		//输入用户密码
+	
+	if (check(username, passwd)) {	//核对用户名和密码
+		isLogin = true;
+		
+	}
+	else {
+		isLogin = false;
+		
+	}
+}
+
+
+
 
 //void FileSystem::f_read(FILE* fpr)
 //{
@@ -150,6 +217,32 @@ void FileSystem::writeDirGroup()
 }
 
 
+int FileSystem::find_dir(const char* name)
+{
+	int dir_size = dirGroup.size();
+	for (int i = 0; i < dir_size; i++) {
+		if (name == dirGroup[i].getName()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+bool FileSystem::check_fname(const char* name, int mode)
+{
+	if (dirGroup[cur_dir].find_file(name, mode) == -1) { 
+		// 没找到文件，说明没有重名
+		return false;
+	}
+	// 找到了文件，说明有重名
+	return true;
+}
+
+int FileSystem::find_file(const char* name, int mode)
+{
+	return dirGroup[cur_dir].find_file(name, mode);
+}
+
 void FileSystem::ls()
 {
 	dirGroup[cur_dir].printDir();
@@ -170,6 +263,11 @@ void FileSystem::cd(int cur)
 
 void FileSystem::touch(const char* name)
 {
+	// 检查是否有重名文件
+	if (check_fname(name, FILE_MODE)) {
+		cout << "文件名重复，请更换文件名" << endl;
+		return;
+	}
 	// 申请Inode，Block
 	int i_index = disk.d_ialloc();
 	int b_index = disk.d_balloc();
@@ -190,21 +288,19 @@ void FileSystem::touch(const char* name)
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
-void FileSystem::rm_f(int i_index)
+void FileSystem::rm_f(const char* name)
 {
 	// 在当前目录删除相应的目录项
-	int i;
-	int d_num = dirGroup[cur_dir].getDentryNum();
-	for (i = 0; i < d_num; i++) {
-		if (dirGroup[cur_dir].getDentry(i).getIndex() == i_index) {
-			break;
-		}
-	}
-	if (i == d_num) {
-		cout << "未找到相应文件" << endl;
+	int d_index = find_file(name, FILE_MODE);
+	if (d_index == -1) {
+		cout << "未找到文件" << endl;
 		return;
 	}
-	dirGroup[cur_dir].del_Dentry(i);
+
+	// 记录删除文件的inode索引
+	int i_index = dirGroup[cur_dir].getDentry(d_index).getIndex();
+	
+	dirGroup[cur_dir].del_Dentry(d_index);
 	
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
 	disk.free_renew(i_index, dirGroup[cur_dir]);
@@ -216,6 +312,12 @@ void FileSystem::rm_f(int i_index)
 
 void FileSystem::mkdir(const char* name)
 {
+	// 检查是否有重名目录
+	if (check_fname(name, DIR_MODE)) {
+		cout << "目录名重复，请更换目录名" << endl;
+		return;
+	}
+
 	// 申请Inode，Block
 	int i_index = disk.d_ialloc();
 	int b_index = disk.d_balloc();
@@ -246,14 +348,18 @@ void FileSystem::mkdir(const char* name)
 	disk.dir_write(i_index, dir);
 }
 
-void FileSystem::rm_rf(int i_index)
+void FileSystem::rm_rf(const char* name)
 {
 	// 注意：删除目录要把该目录下所有文件都删除（可能用到递归函数）
 	// 在当前目录找到对应的目录项
-	int i;
+	int d_index = find_file(name, DIR_MODE);
+	if (d_index == -1) {
+		cout << "未找到目录" << endl;
+		return;
+	}
 	int cur = cur_dir;
-	int dir;
-	int d_num = dirGroup[cur_dir].getDentryNum();
+	
+	/*int d_num = dirGroup[cur_dir].getDentryNum();
 	for (i = 0; i < d_num; i++) {
 		if (dirGroup[cur_dir].getDentry(i).getIndex() == i_index) {
 			break;
@@ -262,30 +368,38 @@ void FileSystem::rm_rf(int i_index)
 	if (i == d_num) {
 		cout << "未找到相应文件" << endl;
 		return;
-	}
+	}*/
 	
 
 	// 找到要删除的目录
-	for (dir = 0; dir < dirGroup.size(); dir++) {
+	/*for (dir = 0; dir < dirGroup.size(); dir++) {
 		if (dirGroup[dir].getI_Index() == i_index) {
 			break;
 		}
+	}*/
+	int dir = find_dir(name);
+	if (d_index == -1) {
+		cout << "未找到目录" << endl;
+		return;
 	}
+	// 记录删除目录的inode索引
+	int i_index = dirGroup[dir].getI_Index();
+	
 	cd(dir);
 	Dentry dentry;
 	for (int i = 0; i < dirGroup[cur_dir].getDentryNum(); i++) {
 		dentry = dirGroup[cur_dir].getDentry(i);
 		if (dentry.getMode() == FILE_MODE) {
-			rm_f(dentry.getIndex());
+			rm_f(dentry.getName().c_str());
 		}
 		else if (dentry.getMode() == DIR_MODE) {
-			rm_rf(dentry.getIndex());
+			rm_rf(dentry.getName().c_str());
 		}
 	}
 	cd(cur);
 
 	// 删除对应目录项和目录
-	dirGroup[cur_dir].del_Dentry(i);
+	dirGroup[cur_dir].del_Dentry(d_index);
 	dirGroup.erase(dirGroup.begin() + dir);
 
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
@@ -302,4 +416,153 @@ void FileSystem::needFormat(bool doFormat)
 bool FileSystem::isFormat()
 {
 	return doFormat;
+}
+
+void FileSystem::help()	//显示所有命令清单 
+{
+	cout << "ls     - 显示当前目录清单" << endl;
+	cout << "cd     - 转入目录" << endl;
+	cout << "touch  - 在该目录下创建文件" << endl;
+	cout << "mkdir  - 创建目录" << endl;
+	cout << "rm -f  - 删除该目录下的文件" << endl;
+	cout << "rm -rf - 删除该目录下的目录" << endl;
+	cout << "q      - 退出文件系统" << endl;
+	return;
+}
+
+bool FileSystem::cmd(string args)	//处理输入的命令
+{
+	if (args == "") {
+		return true;
+	}
+	//用于存放分割后的字符串
+	vector<string> res;
+	//待分割的字符串，含有空格 
+	string inp = args;
+	string result;
+	//将字符串读到input中 
+	stringstream input(inp);
+	//依次输出到result中，并存入res中 
+	while (input >> result)
+		res.push_back(result);
+	
+	int inp2;
+
+	if (res[0] == "ls") {
+		ls();	
+	}
+	// 转到该目录（cd）
+	else if (res[0] == "cd") {
+		if (res.size() <= 1) { // 未输入转入目录名
+			cout << "未输入转入目录名" << endl;
+			return true;
+		}
+		else if (res[1] == ".") {
+			return true;
+		}
+		else if (res[1] == "..") {
+			inp2 = dirGroup[cur_dir].getParentDir();
+		}
+		else {
+			inp2 = find_dir(res[1].c_str()); // 找到相应的目录
+		}
+		cd(inp2);
+	}
+	// 在该目录下创建文件（touch）
+	else if (res[0] == "touch") {
+		if (res.size() <= 1) { // 未输入文件名
+			cout << "未输入文件名" << endl;
+			return true;
+		}
+		touch(res[1].c_str());
+	}
+	// 在该目录下创建目录（mkdir）
+	else if (res[0] == "mkdir") {
+		if (res.size() <= 1) { // 未输入目录名
+			cout << "未输入目录名" << endl;
+			return true;
+		}
+		mkdir(res[1].c_str());
+	}
+	// 删除该目录下的文件（rm）
+	else if (res[0] == "rm") {
+		if (res.size() <= 1 || (res[1] != "-f" && res[1] != "-rf")) {
+			cout << "rm -f  - 删除该目录下的文件" << endl;
+			cout << "rm -rf - 删除该目录下的目录" << endl;
+		}
+		else if (res[1] == "-f") { // 删除该目录下的某文件（rm_f）
+			if (res.size() <= 2) {
+				cout << "未输入要删除的文件名" << endl;
+			}
+			else {
+				rm_f(res[2].c_str());
+			}
+		}
+		else if (res[1] == "-rf") { // 删除该目录下的某目录（rm_rf）
+			if (res.size() <= 2) {
+				cout << "未输入要删除的目录名" << endl;
+			}
+			else {
+				rm_rf(res[2].c_str());
+			}
+		}
+		else {
+			cout << "rm -f  - 删除该目录下的文件" << endl;
+			cout << "rm -rf - 删除该目录下的目录" << endl;
+		}
+	}
+	// 打开一般文件
+	else if (res[0] == "open") {
+		if (res.size() <= 1) { // 未输入文件名
+			cout << "未输入文件名" << endl;
+			return true;
+		}
+		openfile(res[1].c_str());
+	}
+	// 显示帮助
+	else if (res[0] == "help") {
+		help();
+	}
+	// 退出系统
+	else if (res[0] == "q") {
+		return false;
+	}
+	else {
+		cout << "抱歉，没有该命令" << endl;
+	}
+	
+	return true;
+}
+
+void FileSystem::openfile(const char* name)
+{
+	// 找到需要打开的文件
+	int d_index = find_file(name, FILE_MODE);
+	if (d_index == -1) {
+		cout << "未找到文件" << endl;
+		return;
+	}
+	int i_index = dirGroup[cur_dir].getDentry(d_index).getIndex();
+	cout << name << "已打开..." << endl;
+	// 读出文本内容
+	char* context = disk.file_read(i_index);
+	cout << context << endl;
+	delete[] context;
+
+	// 用户可以输入文本内容
+	cout << "您可写入文本内容（输入 q 退出编辑）：" << endl;
+	string text = "\0";
+	while (1) {
+		getline(cin, text);
+		if (text == "q") {
+			cout << "文件已关闭..." << endl;
+			break;
+		}
+		text = "\n" + text;
+		if (!disk.file_write(i_index, text.c_str())) {
+			cout << "文件已关闭..." << endl;
+			break;
+		}
+		dirGroup[cur_dir].setDentryFsize(name, disk.file_size(i_index));
+	}
 }

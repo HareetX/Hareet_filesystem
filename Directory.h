@@ -52,6 +52,8 @@ public:
 	void renewDentryNum();
 	void setParentDir(int dir);
 
+	void setDentryFsize(const char* name, int fsize);
+
 	void dir_clear();
 	// ...
 	
@@ -67,6 +69,9 @@ public:
 	// 返回第No号目录项
 	Dentry getDentry(int No);
 	
+	// 在当前目录，找到文件，返回索引
+	int find_file(const char* name, int mode);
+
 	// 添加目录项
 	void add_Dentry(int index, int mode, const char* str);
 	void add_Dentry(Dentry dentry);
