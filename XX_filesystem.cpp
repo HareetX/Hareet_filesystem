@@ -1,10 +1,8 @@
 #pragma once
 #include "XX_filesystem.h"
 
-
-
 int main() {
-	FileSystem fs; // 实例化FileSystem，并初始化文件系统
+	FileSystem fs; // 实例化FileSystem
 	
 	// 打开磁盘文件
 	if (!Open(fs)) {
@@ -20,7 +18,8 @@ int main() {
 		return -1;
 	}// 格式化成功
 
-	fs.readDirGroup();
+	// 安装文件系统（读入所有目录信息）
+	Install(fs);
 
 	while (1){
 		if (fs.is_Login()) { // 已登录

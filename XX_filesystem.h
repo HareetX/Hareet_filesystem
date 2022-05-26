@@ -44,12 +44,11 @@ const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - B
 #define DIR  1 // 一般目录标志
 
 #include "Disk.h"
-#include "ACI.h"
 #include "Directory.h"
 #include "FileSystem.h"
 
 
 bool Open(FileSystem& fs); // 打开磁盘文件
 bool Format(FileSystem& fs); // 格式化虚拟磁盘文件
-
+void Install(FileSystem& fs); // 读入目录信息
 void Close(FileSystem& fs); // 关闭磁盘文件

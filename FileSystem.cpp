@@ -328,7 +328,7 @@ void FileSystem::touch(const char* name)
 
 	// 在Inode中，目录文件大小要更新
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
-	disk.use_renew(b_index, i_index, FILE_MODE, 0, dirGroup[cur_dir]);
+	disk.use_renew(b_index, i_index, FILE_MODE, 0, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 	
 	// 将当前目录写回数据块
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
@@ -349,7 +349,7 @@ void FileSystem::rm_f(const char* name)
 	dirGroup[cur_dir].del_Dentry(d_index);
 	
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
-	disk.free_renew(i_index, dirGroup[cur_dir]);
+	disk.free_renew(i_index, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 	
 	// 将当前目录写回数据块
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
@@ -387,7 +387,7 @@ void FileSystem::mkdir(const char* name)
 
 	// 在Inode中，目录文件大小要更新
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
-	disk.use_renew(b_index, i_index, FILE_MODE, dir_size, dirGroup[cur_dir]);
+	disk.use_renew(b_index, i_index, FILE_MODE, dir_size, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 
 	// 将当前目录写回数据块
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
@@ -449,7 +449,7 @@ void FileSystem::rm_rf(const char* name)
 	dirGroup.erase(dirGroup.begin() + dir);
 
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
-	disk.free_renew(i_index, dirGroup[cur_dir]);
+	disk.free_renew(i_index, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 	// 将当前目录写回数据块
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
@@ -467,6 +467,7 @@ bool FileSystem::isFormat()
 void FileSystem::help()	//显示所有命令清单 
 {
 	cout << "***************************************" << endl;
+	cout << "*    help   - 显示帮助                *" << endl;
 	cout << "*    ls     - 显示当前目录清单        *" << endl;
 	cout << "*    cd     - 转入目录                *" << endl;
 	cout << "*    touch  - 在该目录下创建文件      *" << endl;

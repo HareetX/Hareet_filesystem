@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ACI.cpp" />
     <ClCompile Include="Directory.cpp" />
     <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FileSystem.cpp" />
@@ -147,11 +146,13 @@
     <ClCompile Include="XX_filesystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ACI.h" />
     <ClInclude Include="Directory.h" />
     <ClInclude Include="Disk.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="XX_filesystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

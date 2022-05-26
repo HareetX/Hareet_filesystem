@@ -1,10 +1,8 @@
 #pragma once
-//#include "XX_filesystem.h"
 
 class Dentry
 {
 private:
-	//int NO;
 	
 	int dentry_size; // 本目录项的长度
 	int i_index; // 文件inode
@@ -21,16 +19,15 @@ public:
 	void setMode(int mode);
 	void setF_Size(int size);
 	void setName(const char* str);
-	void renewSize();
+	void renewSize(); // 目录项大小是根据其他属性计算得到的，不能由外界输入设置
 
-	//void setNo(int No);
 
 	// 获得目录项属性的接口
 	int getIndex();
 	int getMode();
-	int getF_Size();
+	int getF_Size(); // 返回目录项指向的文件的文件大小
 	string getName();
-	int getSize();
+	int getSize(); // 返回目录项dentry的大小
 };
 
 class Directory
@@ -52,10 +49,10 @@ public:
 	void renewDentryNum();
 	void setParentDir(int dir);
 
+	// 设置目录包含的目录项指向的文件的文件大小
 	void setDentryFsize(const char* name, int fsize);
-
+	// 清空目录
 	void dir_clear();
-	// ...
 	
 	// 获得目录属性的接口
 	string getName();
@@ -63,8 +60,7 @@ public:
 	size_t getDentryNum();
 	int getParentDir();
 
-	int getDirSize();
-	// ...
+	int getDirSize(); // 返回该目录的总大小
 
 	// 返回第No号目录项
 	Dentry getDentry(int No);

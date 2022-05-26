@@ -1,8 +1,6 @@
 #pragma once
-//#include "XX_filesystem.h"
-#include "ACI.h"
 #include "Directory.h"
-//#include "FileSystem.h"
+
 // Block
 class Block
 {
@@ -19,10 +17,10 @@ public:
 	virtual void printInfo() = 0;
 
 	// 块接口
-	int getNO(); // 获取块号
+	//int getNO(); // 获取块号
 
-	virtual void block_read(FILE* fpr) = 0; // 读入块内数据
-	virtual void block_write(FILE* fpw) = 0; // 写入磁盘文件
+	virtual void block_read(FILE* fpr) = 0; // 把块内数据从磁盘文件读入程序
+	virtual void block_write(FILE* fpw) = 0; // 把块内数据从程序写入磁盘文件
 };
 
 // 数据块
@@ -40,11 +38,11 @@ public:
 	virtual void format();
 
 	// 打印数据块信息
-	virtual void printInfo(); // TODO
+	virtual void printInfo(); // TODO*
 
 	// 数据块接口
 	char* buffer_return(); // 返回指向数据块数据的指针
-	void buffer_write(char buf[Block_Num * BLOCK_SIZE]); // 根据传入的数组改写数据块的数据
+	//void buffer_write(char buf[Block_Num * BLOCK_SIZE]); // 根据传入的数组改写数据块的数据
 
 	virtual void block_read(FILE* fpr); // 读入数据块
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
@@ -74,8 +72,9 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Superblock
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
-	void use_renew();
-	void free_renew(int b_cout);
+	void use_renew(); // 创建文件时Superblock更新
+	void use_renew(int blocks_num); // 写入文件占用超出原有块时，更新Superblock的块占用信息
+	void free_renew(int b_cout); // 删除文件时Superblock更新
 };
 
 class Block_Bitmap :
@@ -97,10 +96,10 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Block_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
-	int balloc();
+	int balloc(); // 申请空闲的block，返回首个空闲block的索引
 
-	void use_renew(int b_index);
-	void free_renew(int b_index);
+	void use_renew(int b_index); // 需要占用空闲block时更新块位图
+	void free_renew(int b_index); // 需要释放空闲block时更新块位图
 };
 
 class Inode_Bitmap :
@@ -122,10 +121,10 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Inode_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
-	int ialloc();
+	int ialloc(); // 申请空闲的inode，返回首个空闲inode的索引序号
 
-	void use_renew(int i_index);
-	void free_renew(int i_index);
+	void use_renew(int i_index); // 需要占用空闲Inode时更新块位图
+	void free_renew(int i_index); // 需要释放空闲Inode时更新块位图
 };
 
 class Inode
@@ -134,11 +133,11 @@ private:
 	int i_No; // Inode编号
 	int f_mode; // 文件类型
 	int f_size; // 文件大小
-	int c_time; // 创建时间
+	//int c_time; // 创建时间
 	int block_index[BLOCK_INDEX]; // Inode指向的块号序列
 
 public:
-	Inode(int No, int mode, int size, int time_c, int index[BLOCK_INDEX]);
+	Inode(int No, int mode, int size, int index[BLOCK_INDEX]);
 	Inode(int No);
 	Inode();
 
@@ -158,8 +157,8 @@ public:
 	int getF_Size(); // 获得文件大小
 	void setF_Size(int size); // 设置文件大小
 
-	int getC_Time(); // 获得创建时间
-	void setC_Time(int time); // 设置创建时间
+	//int getC_Time(); // 获得创建时间
+	//void setC_Time(int time); // 设置创建时间
 
 	bool addBlock(int index); // 增加可用块序号
 
@@ -190,8 +189,8 @@ public:
 
 	Inode* getInode(int No); // 返回第No号Inode
 
-	void use_renew(int i_index, int b_index, int mode, int f_size, Directory dir);
-	void free_renew(int i_index, Directory dir);
+	void use_renew(int i_index, int b_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size); // 创建文件时，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
+	void free_renew(int i_index, int cur_dir_i_index, int cur_dir_size); // 创建文件时，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
 };
 
 // Disk单元
@@ -214,17 +213,16 @@ public:
 	*/ 
 
 	// 将磁盘文件读入Disk单元
-	
 	void block_read(Block& b, FILE* fpr); // Disk单元内各块区数据读入
 	void disk_read(FILE* fpr); // Disk单元读入
 		
 	// 将Disk单元存入磁盘文件
-	
 	void block_write(Block& b, FILE* fpw); // Disk单元内各块区数据写出
 	void disk_write(FILE* fpw); // // Disk单元写出
 
-	// 返回位图情况
+	// 返回首个空闲block的序号
 	int d_balloc();
+	// 返回首个空闲Inode的序号
 	int d_ialloc();
 
 	// 把文件内容从数据块读出
@@ -239,11 +237,11 @@ public:
 	void dentry_write(int dentry_address, Dentry dentry); // 把目录项写入数据块
 	void dentry_write(int dentry_address, char* buf, Dentry dentry); // 把目录项写入数据块
 
-	Directory dir_read(int i_No); // 从buffer读取目录 TEST
-	void dir_write(int i_No, Directory dir); // 把目录写入buffer TEST
+	Directory dir_read(int i_No); // 从buffer读取目录
+	void dir_write(int i_No, Directory dir); // 把目录写入buffer
 
 	// 占用空间时更新Disk
-	void use_renew(int b_index, int i_index, int mode, int f_size, Directory dir);
+	void use_renew(int b_index, int i_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size);
 	// 释放空间时更新Disk
-	void free_renew(int i_index, Directory dir);
+	void free_renew(int i_index, int cur_dir_i_index, int cur_dir_size);
 };

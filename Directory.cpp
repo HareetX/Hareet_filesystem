@@ -1,10 +1,7 @@
-
-//#include "Directory.h"
 #include "XX_filesystem.h"
 
 Dentry::Dentry(int index, int mode, int size, const char* str)
 {
-	//NO = -1;
 	i_index = index;
 	f_mode = mode;
 	f_size = size;
@@ -14,7 +11,6 @@ Dentry::Dentry(int index, int mode, int size, const char* str)
 
 Dentry::Dentry()
 {
-	//NO = -1;
 	i_index = -1;
 	f_mode = -1;
 	f_size = -1;

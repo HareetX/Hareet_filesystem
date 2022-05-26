@@ -26,6 +26,11 @@ bool Format(FileSystem& fs)
 	return fs.formatSysFile();
 }
 
+void Install(FileSystem& fs)
+{
+	fs.readDirGroup();
+}
+
 void Close(FileSystem& fs)
 {
 	fs.writeDirGroup();

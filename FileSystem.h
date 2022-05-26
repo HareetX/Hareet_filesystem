@@ -14,8 +14,8 @@ public:
     string getUsername();
 };
 
-class FileSystem :
-    public ACI
+class FileSystem
+//    public ACI
 {
 private:
     // 文件系统相关变量
@@ -30,7 +30,7 @@ private:
 
     int cur_dir; // 当前目录序号
 
-    char Cur_Host_Name[110];
+    char Cur_Host_Name[110]; // 主机名
     vector<User> userGroup; // 用户组（本系统只有root用户，但考虑到未来扩展的情况，所以用vector）
     int cur_user; // 当前用户序号
 
@@ -58,7 +58,7 @@ public:
     * 目录组与系统磁盘交互接口
     */
     void readDirGroup();
-    void writeDirGroup(); // TEST
+    void writeDirGroup();
 
 
     /*
@@ -69,7 +69,7 @@ public:
     bool isFormat(); // 传出文件系统格式化需求
 
     // 登录接口
-    bool is_Login();
+    bool is_Login(); // 返回系统的登录状态
     void Login();
 
     // 目录组相关 TEST
