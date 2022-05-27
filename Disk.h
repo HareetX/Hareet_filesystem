@@ -121,6 +121,7 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Inode_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
+	//bool checkIsUsed(int i_No); // 查看第i_No号的inode是否被占用
 	int ialloc(); // 申请空闲的inode，返回首个空闲inode的索引序号
 
 	void use_renew(int i_index); // 需要占用空闲Inode时更新块位图
@@ -224,6 +225,13 @@ public:
 	int d_balloc();
 	// 返回首个空闲Inode的序号
 	int d_ialloc();
+
+	// 显示虚拟磁盘数据块占用情况
+	void printBlocks();
+	// 显示虚拟磁盘Inode占用情况
+	void printInodes();
+	// 显示虚拟磁盘超级块占用情况
+	void printSuperblock();
 
 	// 把文件内容从数据块读出
 	char* file_read(int i_index);

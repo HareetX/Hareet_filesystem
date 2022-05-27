@@ -90,7 +90,7 @@ void Superblock::printInfo()
 	cout << "	Inode总数  ：" << s_Inode_Num << endl;
 	cout << "	空闲Inode数：" << free_Inode_Num << endl;
 	cout << "	Block总数  ：" << s_Block_Num << endl;
-	cout << "	空闲Block数：" << free_Inode_Num << endl;
+	cout << "	空闲Block数：" << free_Block_Num << endl;
 }
 
 void Superblock::block_read(FILE* fpr)
@@ -265,6 +265,11 @@ void Inode_Bitmap::block_write(FILE* fpw)
 	fwrite(i_isUsed, INODE_NUM, 1, fpw);
 }
 
+//bool Inode_Bitmap::checkIsUsed(int i_No)
+//{
+//	return i_isUsed[i_No];
+//}
+
 int Inode_Bitmap::ialloc()
 {
 	for (int i = 0; i < INODE_NUM; i++) {
@@ -326,15 +331,15 @@ void Inode::format()
 
 void Inode::printInfo()
 {
-	cout << "Inode[ " << i_No << " ]：" << endl;
+	cout << "Inode[ " << i_No << " ]：";
 	if (f_mode == FILE_MODE) {
-		cout << "	文件类型：普通文件类型" << endl;
+		cout << "	文件类型：普通文件类型";
 	}
 	else if (f_mode == DIR_MODE) {
-		cout << "	文件类型：目录文件类型" << endl;
+		cout << "	文件类型：目录文件类型";
 	}
 	else {
-		cout<< "	文件类型：其他文件类型" << endl;
+		cout<< "	文件类型：其他文件类型";
 	}
 	cout << "	文件大小：" << f_size << " B" << endl;
 }
@@ -442,7 +447,12 @@ void Inode_Label::format()
 
 void Inode_Label::printInfo()
 {
-	cout << "TODO" << endl;
+	cout << "已用Inode情况：" << endl;
+	for (int i = 0; i < INODE_NUM; i++) {
+		if (inode[i].getF_Mode() != -1) {
+			inode[i].printInfo();
+		}
+	}
 }
 
 void Inode_Label::block_read(FILE* fpr)
@@ -547,6 +557,22 @@ int Disk::d_balloc()
 int Disk::d_ialloc()
 {
 	return i_bmap.ialloc();
+}
+
+void Disk::printBlocks()
+{
+	b_bmap.printInfo();
+}
+
+void Disk::printInodes()
+{
+	i_bmap.printInfo();
+	i_label.printInfo();
+}
+
+void Disk::printSuperblock()
+{
+	spb.printInfo();
 }
 
 char* Disk::file_read(int i_index)

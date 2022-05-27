@@ -279,6 +279,21 @@ void FileSystem::printUserPos()
 	cout << userGroup[cur_user].getUsername() << "@" << Cur_Host_Name << ": " << getDirPos(cur_dir) << "$";
 }
 
+void FileSystem::df()
+{
+	disk.printBlocks();
+}
+
+void FileSystem::df_i()
+{
+	disk.printInodes();
+}
+
+void FileSystem::df_s()
+{
+	disk.printSuperblock();
+}
+
 string FileSystem::getDirPos(int cur)
 {
 	if (cur == 0) {
@@ -466,17 +481,20 @@ bool FileSystem::isFormat()
 
 void FileSystem::help()	//显示所有命令清单 
 {
-	cout << "***************************************" << endl;
-	cout << "*    help   - 显示帮助                *" << endl;
-	cout << "*    ls     - 显示当前目录清单        *" << endl;
-	cout << "*    cd     - 转入目录                *" << endl;
-	cout << "*    touch  - 在该目录下创建文件      *" << endl;
-	cout << "*    mkdir  - 创建目录                *" << endl;
-	cout << "*    rm -f  - 删除该目录下的文件      *" << endl;
-	cout << "*    rm -rf - 删除该目录下的目录      *" << endl;
-	cout << "*    open   - 打开文件（可读写文件）  *" << endl;
-	cout << "*    q      - 退出文件系统            *" << endl;
-	cout << "***************************************" << endl;
+	cout << "********************************************" << endl;
+	cout << "*    help   - 显示帮助                     *" << endl;
+	cout << "*    ls     - 显示当前目录清单             *" << endl;
+	cout << "*    cd     - 转入目录                     *" << endl;
+	cout << "*    touch  - 在该目录下创建文件           *" << endl;
+	cout << "*    mkdir  - 创建目录                     *" << endl;
+	cout << "*    rm -f  - 删除该目录下的文件           *" << endl;
+	cout << "*    rm -rf - 删除该目录下的目录           *" << endl;
+	cout << "*    open   - 打开文件（可读写文件）       *" << endl;
+	cout << "*    df     - 显示文件系统的磁盘使用情况   *" << endl;
+	cout << "*    df -i  - 显示文件系统的i节点使用情况  *" << endl;
+	cout << "*    df -s  - 显示文件系统的超级块使用情况 *" << endl;
+	cout << "*    q      - 退出文件系统                 *" << endl;
+	cout << "********************************************" << endl;
 	return;
 }
 
@@ -568,6 +586,23 @@ bool FileSystem::cmd(string args)	//处理输入的命令
 			return true;
 		}
 		openfile(res[1].c_str());
+	}
+	// 显示文件系统的磁盘或i节点使用情况
+	else if (res[0] == "df") {
+		if (res.size() <= 1) { // 显示文件系统的磁盘使用情况
+			df();
+		}
+		else if (res[1] == "-i") { // 显示文件系统的i节点使用情况
+			df_i();
+		}
+		else if (res[1] == "-s") { // 显示文件系统的超级块使用情况
+			df_s();
+		}
+		else {
+			cout << "df     - 显示文件系统的磁盘使用情况" << endl;
+			cout << "df -i  - 显示文件系统的i节点使用情况" << endl;
+			cout << "df -s  - 显示文件系统的超级块使用情况" << endl;
+		}
 	}
 	// 显示帮助
 	else if (res[0] == "help") {

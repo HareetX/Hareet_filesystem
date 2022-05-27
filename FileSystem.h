@@ -79,7 +79,8 @@ public:
     
     string getDirPos(int cur); // 打印目录位置
     void printUserPos(); // 登录后，打印用户所在目录
-
+  
+    bool cmd(string args); // 输入指令
 
     void ls();// 显示该目录下的所有文件信息（ls）
     void cd(int cur); // 转到该目录（cd）
@@ -88,7 +89,10 @@ public:
     void mkdir(const char* name); // 在该目录下创建目录（mkdir）
     void rm_rf(const char* name); // 删除该目录下的某目录（rm_rf）
     void openfile(const char* name); // 打开一般文件（open）
+    void df(); // 显示文件系统的磁盘使用情况
+    void df_i(); // 显示文件系统的i节点使用情况
+    void df_s(); // 显示文件系统的超级块使用情况
     void help(); // 显示帮助
-    bool cmd(string args); // 输入指令
+  
 };
 
