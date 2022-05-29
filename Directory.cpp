@@ -159,6 +159,7 @@ int Directory::getDirSize()
 {
 	int dirSize = 0;
 	for (int i = 0; i < dentryGroup.size(); i++) {
+		dirSize += dentryGroup[i].getF_Size();
 		dirSize += dentryGroup[i].getSize();
 	}
 	return dirSize;
@@ -179,17 +180,17 @@ int Directory::find_file(const char* name, int mode)
 	return -1; // 没找到文件，返回 -1
 }
 
-void Directory::add_Dentry(int index, int mode, const char* str)
-{
-	Dentry d;
-	d.setIndex(index);
-	d.setMode(mode);
-	d.setName(str);
-	d.renewSize();
-	//Dentry d(int index, int mode, const char* str);
-	dentryGroup.push_back(d);	// 将新增的目录项添加至目录项组尾部
-	dentry_num = dentryGroup.size();	// 更新目录项的个数	
-}
+//void Directory::add_Dentry(int index, int mode, const char* str)
+//{
+//	Dentry d;
+//	d.setIndex(index);
+//	d.setMode(mode);
+//	d.setName(str);
+//	d.renewSize();
+//	//Dentry d(int index, int mode, const char* str);
+//	dentryGroup.push_back(d);	// 将新增的目录项添加至目录项组尾部
+//	dentry_num = dentryGroup.size();	// 更新目录项的个数	
+//}
 
 void Directory::add_Dentry(Dentry dentry)
 {

@@ -15,6 +15,7 @@ int main() {
  	if (!Format(fs)) {
 		// 格式化失败
 		cout << "格式化失败..." << endl;
+		Close(fs);
 		return -1;
 	}// 格式化成功
 

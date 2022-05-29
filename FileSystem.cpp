@@ -361,6 +361,7 @@ void FileSystem::rm_f(const char* name)
 	// 记录删除文件的inode索引
 	int i_index = dirGroup[cur_dir].getDentry(d_index).getIndex();
 	
+	// 删除文件的目录项
 	dirGroup[cur_dir].del_Dentry(d_index);
 	
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
@@ -419,26 +420,8 @@ void FileSystem::rm_rf(const char* name)
 		return;
 	}
 	int cur = cur_dir;
-	
-	/*int d_num = dirGroup[cur_dir].getDentryNum();
-	for (i = 0; i < d_num; i++) {
-		if (dirGroup[cur_dir].getDentry(i).getIndex() == i_index) {
-			break;
-		}
-	}
-	if (i == d_num) {
-		cout << "未找到相应文件" << endl;
-		return;
-	}*/
-	
-
-	// 找到要删除的目录
-	/*for (dir = 0; dir < dirGroup.size(); dir++) {
-		if (dirGroup[dir].getI_Index() == i_index) {
-			break;
-		}
-	}*/
 	int dir = find_dir(name);
+
 	if (d_index == -1) {
 		cout << "未找到目录" << endl;
 		return;
@@ -481,20 +464,20 @@ bool FileSystem::isFormat()
 
 void FileSystem::help()	//显示所有命令清单 
 {
-	cout << "********************************************" << endl;
-	cout << "*    help   - 显示帮助                     *" << endl;
-	cout << "*    ls     - 显示当前目录清单             *" << endl;
-	cout << "*    cd     - 转入目录                     *" << endl;
-	cout << "*    touch  - 在该目录下创建文件           *" << endl;
-	cout << "*    mkdir  - 创建目录                     *" << endl;
-	cout << "*    rm -f  - 删除该目录下的文件           *" << endl;
-	cout << "*    rm -rf - 删除该目录下的目录           *" << endl;
-	cout << "*    open   - 打开文件（可读写文件）       *" << endl;
-	cout << "*    df     - 显示文件系统的磁盘使用情况   *" << endl;
-	cout << "*    df -i  - 显示文件系统的i节点使用情况  *" << endl;
-	cout << "*    df -s  - 显示文件系统的超级块使用情况 *" << endl;
-	cout << "*    q      - 退出文件系统                 *" << endl;
-	cout << "********************************************" << endl;
+	cout << "*****************************************************" << endl;
+	cout << "*    help            - 显示帮助                     *" << endl;
+	cout << "*    ls              - 显示当前目录清单             *" << endl;
+	cout << "*    cd 目录名       - 转入目录                     *" << endl;
+	cout << "*    touch 文件名    - 在该目录下创建文件           *" << endl;
+	cout << "*    mkdir 目录名    - 创建目录                     *" << endl;
+	cout << "*    rm[ -f] 文件名  - 删除该目录下的文件           *" << endl;
+	cout << "*    rm -rf 目录名   - 删除该目录下的目录           *" << endl;
+	cout << "*    open 文件名     - 打开文件（可读写文件）       *" << endl;
+	cout << "*    df              - 显示文件系统的磁盘使用情况   *" << endl;
+	cout << "*    df -i           - 显示文件系统的i节点使用情况  *" << endl;
+	cout << "*    df -s           - 显示文件系统的超级块信息     *" << endl;
+	cout << "*    q               - 退出文件系统                 *" << endl;
+	cout << "*****************************************************" << endl;
 	return;
 }
 
@@ -553,30 +536,38 @@ bool FileSystem::cmd(string args)	//处理输入的命令
 		mkdir(res[1].c_str());
 	}
 	// 删除该目录下的文件（rm）
-	else if (res[0] == "rm") {
-		if (res.size() <= 1 || (res[1] != "-f" && res[1] != "-rf")) {
-			cout << "rm -f  - 删除该目录下的文件" << endl;
-			cout << "rm -rf - 删除该目录下的目录" << endl;
+	else if (res[0] == "rm") {// 默认为删除文件功能
+		if (res.size() <= 1) {
+			cout << "未输入要删除的文件名" << endl;
+			/*cout << "rm[ -f] - 删除该目录下的文件" << endl;
+			cout << "rm -rf  - 删除该目录下的目录" << endl;*/
 		}
-		else if (res[1] == "-f") { // 删除该目录下的某文件（rm_f）
-			if (res.size() <= 2) {
-				cout << "未输入要删除的文件名" << endl;
+		else if (res[1][0] == '-') {
+			if (res[1] == "-f") { // 删除该目录下的某文件（rm_f）
+				if (res.size() <= 2) {
+					cout << "未输入要删除的文件名" << endl;
+				}
+				else {
+					rm_f(res[2].c_str());
+				}
+			}
+			else if (res[1] == "-rf") { // 删除该目录下的某目录（rm_rf）
+				if (res.size() <= 2) {
+					cout << "未输入要删除的目录名" << endl;
+				}
+				else {
+					rm_rf(res[2].c_str());
+				}
 			}
 			else {
-				rm_f(res[2].c_str());
-			}
-		}
-		else if (res[1] == "-rf") { // 删除该目录下的某目录（rm_rf）
-			if (res.size() <= 2) {
-				cout << "未输入要删除的目录名" << endl;
-			}
-			else {
-				rm_rf(res[2].c_str());
+				cout << "rm[ -f] - 删除该目录下的文件" << endl;
+				cout << "rm -rf  - 删除该目录下的目录" << endl;
 			}
 		}
 		else {
-			cout << "rm -f  - 删除该目录下的文件" << endl;
-			cout << "rm -rf - 删除该目录下的目录" << endl;
+			/*cout << "rm[ -f] - 删除该目录下的文件" << endl;
+			cout << "rm -rf  - 删除该目录下的目录" << endl;*/
+			rm_f(res[1].c_str());
 		}
 	}
 	// 打开一般文件
@@ -599,9 +590,9 @@ bool FileSystem::cmd(string args)	//处理输入的命令
 			df_s();
 		}
 		else {
-			cout << "df     - 显示文件系统的磁盘使用情况" << endl;
-			cout << "df -i  - 显示文件系统的i节点使用情况" << endl;
-			cout << "df -s  - 显示文件系统的超级块使用情况" << endl;
+			cout << "df      - 显示文件系统的磁盘使用情况" << endl;
+			cout << "df -i   - 显示文件系统的i节点使用情况" << endl;
+			cout << "df -s   - 显示文件系统的超级块使用情况" << endl;
 		}
 	}
 	// 显示帮助
@@ -644,7 +635,7 @@ void FileSystem::openfile(const char* name)
 			break;
 		}
 		text = "\n" + text;
-		if (!disk.file_write(i_index, text.c_str())) {
+		if (!disk.file_write(i_index, text.c_str(), dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize())) {
 			cout << "文件已关闭..." << endl;
 			break;
 		}

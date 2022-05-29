@@ -59,7 +59,7 @@ private:
 	int free_Block_Num; // 空闲Block数
 
 public:
-	Superblock(int free_INum, int free_BNum);
+	//Superblock(int free_INum, int free_BNum);
 	Superblock();
 
 	// 格式化Superblock
@@ -83,7 +83,7 @@ class Block_Bitmap :
 private:
 	bool b_isUsed[Block_Num]; // Block占用情况
 public:
-	Block_Bitmap(bool isUsed[Block_Num]);
+	//Block_Bitmap(bool isUsed[Block_Num]);
 	Block_Bitmap();
 
 	// 格式化Block位图
@@ -108,7 +108,7 @@ class Inode_Bitmap :
 private:
 	bool i_isUsed[INODE_NUM]; // Inode占用情况
 public:
-	Inode_Bitmap(bool isUsed[INODE_NUM]);
+	//Inode_Bitmap(bool isUsed[INODE_NUM]);
 	Inode_Bitmap();
 
 	// 格式化Inode位图
@@ -138,8 +138,8 @@ private:
 	int block_index[BLOCK_INDEX]; // Inode指向的块号序列
 
 public:
-	Inode(int No, int mode, int size, int index[BLOCK_INDEX]);
-	Inode(int No);
+	//Inode(int No, int mode, int size, int index[BLOCK_INDEX]);
+	//Inode(int No);
 	Inode();
 
 	// 格式化Inode
@@ -237,10 +237,10 @@ public:
 	char* file_read(int i_index);
 	int file_size(int i_index);
 	// 把文件缓存写入数据块
-	bool file_write(int i_index, const char* buf);
+	bool file_write(int i_index, const char* buf, int cur_dir_i_index, int cur_dir_size);
 
 	// Disk与目录的接口
-	Dentry dentry_read(int dentry_address); // 从数据块读取目录项
+	//Dentry dentry_read(int dentry_address); // 从数据块读取目录项
 	Dentry dentry_read(int dentry_address, char* buf); // 从数据块读取目录项
 	void dentry_write(int dentry_address, Dentry dentry); // 把目录项写入数据块
 	void dentry_write(int dentry_address, char* buf, Dentry dentry); // 把目录项写入数据块

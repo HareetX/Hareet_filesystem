@@ -66,11 +66,11 @@ void DataBlock::block_write(FILE* fpw)
 }
 
 
-Superblock::Superblock(int free_INum, int free_BNum) :Block(0)
-{
-	free_Inode_Num = free_INum;
-	free_Block_Num = free_BNum;
-}
+//Superblock::Superblock(int free_INum, int free_BNum) :Block(0)
+//{
+//	free_Inode_Num = free_INum;
+//	free_Block_Num = free_BNum;
+//}
 
 Superblock::Superblock() :Block(0)
 {
@@ -126,12 +126,12 @@ void Superblock::free_renew(int b_cout)
 	free_Inode_Num++;
 }
 
-Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
-{
-	for (int i = 0; i < Block_Num; i++) {
-		b_isUsed[i] = isUsed[i];
-	}
-}
+//Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
+//{
+//	for (int i = 0; i < Block_Num; i++) {
+//		b_isUsed[i] = isUsed[i];
+//	}
+//}
 
 Block_Bitmap::Block_Bitmap(): Block(BLOCKS_PER_SUPERBLOCK)
 {
@@ -206,12 +206,12 @@ void Block_Bitmap::free_renew(int b_index)
 }
 
 
-Inode_Bitmap::Inode_Bitmap(bool isUsed[INODE_NUM]): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP)
-{
-	for (int i = 0; i < INODE_NUM; i++) {
-		i_isUsed[i] = isUsed[i];
-	}
-}
+//Inode_Bitmap::Inode_Bitmap(bool isUsed[INODE_NUM]): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP)
+//{
+//	for (int i = 0; i < INODE_NUM; i++) {
+//		i_isUsed[i] = isUsed[i];
+//	}
+//}
 
 Inode_Bitmap::Inode_Bitmap(): Block(4)
 {
@@ -290,25 +290,25 @@ void Inode_Bitmap::free_renew(int i_index)
 	i_isUsed[i_index] = 0;
 }
 
-Inode::Inode(int No, int mode, int size, int index[BLOCK_INDEX])
-{
-	i_No = No;
-	f_mode = mode;
-	f_size = size;
-	for (int i = 0; i < BLOCK_INDEX; i++) {
-		block_index[i] = index[i];
-	}
-}
+//Inode::Inode(int No, int mode, int size, int index[BLOCK_INDEX])
+//{
+//	i_No = No;
+//	f_mode = mode;
+//	f_size = size;
+//	for (int i = 0; i < BLOCK_INDEX; i++) {
+//		block_index[i] = index[i];
+//	}
+//}
 
-Inode::Inode(int No)
-{
-	i_No = No;
-	f_mode = -1;
-	f_size = -1;
-	for (int i = 0; i < BLOCK_INDEX; i++) {
-		block_index[i] = -1;
-	}
-}
+//Inode::Inode(int No)
+//{
+//	i_No = No;
+//	f_mode = -1;
+//	f_size = -1;
+//	for (int i = 0; i < BLOCK_INDEX; i++) {
+//		block_index[i] = -1;
+//	}
+//}
 
 Inode::Inode()
 {
@@ -589,10 +589,12 @@ int Disk::file_size(int i_index)
 	return i_label.getInode(i_index)->getF_Size();
 }
 
-bool Disk::file_write(int i_index, const char* buf)
+bool Disk::file_write(int i_index, const char* buf, int cur_dir_i_index, int cur_dir_size)
 {
 	Inode* inode = i_label.getInode(i_index);
+	Inode* cur_dir_inode = i_label.getInode(cur_dir_i_index);
 	int fsize = inode->getF_Size();
+	int dirsize = cur_dir_inode->getF_Size();
 	int blocks = (fsize + (int)strlen(buf)) / BLOCK_SIZE - fsize / BLOCK_SIZE;
 	vector<int> b_index;
 	b_index.clear();
@@ -614,7 +616,11 @@ bool Disk::file_write(int i_index, const char* buf)
 			inode->addBlock(b_index[i]);
 		}
 	}
+	// 更新文件的inode
 	inode->setF_Size(fsize + strlen(buf));
+	// 更新所在目录的inode
+	cur_dir_inode->setF_Size(dirsize + strlen(buf));
+
 	char* buffer = inode->getFile(d_block.buffer_return()); // 用到了getFile函数，要注意delete
 	memcpy(buffer + fsize, buf, strlen(buf) + 1);
 	for (int i = 0; i < BLOCK_INDEX; i++) {
@@ -629,16 +635,16 @@ bool Disk::file_write(int i_index, const char* buf)
 }
 
 
-Dentry Disk::dentry_read(int dentry_address)
-{
-	char* buf = d_block.buffer_return();
-	int size = *((int*)(buf + dentry_address));
-	int index = *((int*)(buf + dentry_address + sizeof(size)));
-	int mode = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index)));
-	int f_size = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode)));
-	char* name = buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode) + sizeof(f_size);
-	return Dentry(index, mode, f_size, name);
-}
+//Dentry Disk::dentry_read(int dentry_address)
+//{
+//	char* buf = d_block.buffer_return();
+//	int size = *((int*)(buf + dentry_address));
+//	int index = *((int*)(buf + dentry_address + sizeof(size)));
+//	int mode = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index)));
+//	int f_size = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode)));
+//	char* name = buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode) + sizeof(f_size);
+//	return Dentry(index, mode, f_size, name);
+//}
 
 Dentry Disk::dentry_read(int dentry_address, char* buf)
 {

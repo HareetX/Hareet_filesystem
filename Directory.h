@@ -69,7 +69,7 @@ public:
 	int find_file(const char* name, int mode);
 
 	// 添加目录项
-	void add_Dentry(int index, int mode, const char* str);
+	//void add_Dentry(int index, int mode, const char* str);
 	void add_Dentry(Dentry dentry);
 	
 	// 删除目录项
