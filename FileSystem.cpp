@@ -21,46 +21,8 @@ FileSystem::FileSystem()
 
 bool FileSystem::is_Login()
 {
-	//cout << isLogin;
 	return isLogin;
 }
-
-//void inUsername(char username[])	//输入用户名
-//{
-//	
-//	cout << "username: " ;
-//	cin >> username;
-//}
-
-//void inPasswd(char passwd[])	//输入密码
-//{
-//	cout << "passwd: ";
-//	cin >> passwd;
-//	//cin.ignore();
-//	//int i = 0;
-//	//while (true)
-//	//{
-//	//	passwd[i] = getch();     //只能接收一个动作 
-//	//	if (passwd[i] == '\r')     //回车键表示\r\n 
-//	//	{
-//	//		break;
-//	//	}
-//
-//	//}
-//}
-
-//bool check(char username[], char passwd[]) //核对用户名，密码
-//{	
-//
-//	if ((strcmp(username, "root") == 0) && (strcmp(passwd, "root") == 0)) {
-//
-//		return 1;
-//	}
-//	else
-//	{
-//		return 0;
-//	}
-//}
 
 
 void FileSystem::Login()	//登录界面
@@ -93,31 +55,11 @@ void FileSystem::Login()	//登录界面
 	if (!isLogin) {
 		cout << "用户名或密码错误" << endl;
 	}
-	/*if (check(username, passwd)) {	
-		isLogin = true;
-		
-	}
-	else {
-		isLogin = false;
-		
-	}*/
+	
 	cin.ignore();
 	system("pause");
 	system("cls");
 }
-
-
-
-
-//void FileSystem::f_read(FILE* fpr)
-//{
-//	fr = fpr;
-//}
-//
-//void FileSystem::f_write(FILE* fpw)
-//{
-//	fw = fpw;
-//}
 
 bool FileSystem::readSysFile()
 {
@@ -250,13 +192,11 @@ void FileSystem::writeDirGroup()
 
 int FileSystem::find_dir(const char* name)
 {
-	int dir_size = dirGroup.size();
-	for (int i = 0; i < dir_size; i++) {
-		if (name == dirGroup[i].getName()) {
-			return i;
-		}
+	int d_index = dirGroup[cur_dir].find_file(name, DIR_MODE);
+	if (d_index == -1) {
+		return -1;
 	}
-	return -1;
+	return find_dir(dirGroup[cur_dir].getDentry(d_index).getIndex());
 }
 
 bool FileSystem::check_fname(const char* name, int mode)
@@ -272,6 +212,30 @@ bool FileSystem::check_fname(const char* name, int mode)
 int FileSystem::find_file(const char* name, int mode)
 {
 	return dirGroup[cur_dir].find_file(name, mode);
+}
+
+int FileSystem::find_dir(int i_index)
+{
+	int dir_size = dirGroup.size();
+	for (int i = 0; i < dir_size; i++) {
+		if (i_index == dirGroup[i].getI_Index()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int FileSystem::getDirTotalSize(int dir)
+{
+	int dirTotalSize = 0;
+	for (int i = dirGroup[dir].getDentryNum() - 1; i >= 0; i--) {
+		Dentry dentry = dirGroup[dir].getDentry(i);
+		dirTotalSize += dentry.getF_Size();
+		if (dentry.getMode() == DIR_MODE) {// 遇到目录文件递归求其目录下文件总大小
+			dirTotalSize += getDirTotalSize(find_dir(dentry.getIndex()));
+		}
+	}
+	return dirTotalSize;
 }
 
 void FileSystem::printUserPos()
@@ -306,7 +270,22 @@ string FileSystem::getDirPos(int cur)
 
 void FileSystem::ls()
 {
-	dirGroup[cur_dir].printDir();
+	for (int i = 0; i < dirGroup[cur_dir].getDentryNum(); i++) {
+		Dentry dentry = dirGroup[cur_dir].getDentry(i);
+		cout << dentry.getName() << "\t";
+		int mode = dentry.getMode();
+		if (mode == DIR_MODE) {
+			cout << "目录文件";
+			cout << "\t" << dentry.getF_Size()  + getDirTotalSize(find_dir(dentry.getName().c_str())) << "B" << endl;
+		}
+		else if (mode == FILE_MODE) {
+			cout << "一般文件";
+			cout << "\t" << dentry.getF_Size() << "B" << endl;
+		}
+		else if (mode == OTHER_MODE) {
+			cout << "其他文件" << endl;
+		}
+	}
 }
 
 void FileSystem::cd(int cur)
@@ -340,6 +319,11 @@ void FileSystem::touch(const char* name)
 	// 在当前目录添加相应的目录项
 	Dentry f_dentry(i_index, FILE_MODE, 0, name);
 	dirGroup[cur_dir].add_Dentry(f_dentry);
+	// 更新指向当前目录的目录项的文件大小
+	if (cur_dir > 0) {
+		int parent_dir = dirGroup[cur_dir].getParentDir();
+		dirGroup[parent_dir].setDentryFsize(dirGroup[cur_dir].getName().c_str(), dirGroup[cur_dir].getDirSize(), DIR_MODE);
+	}
 
 	// 在Inode中，目录文件大小要更新
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
@@ -401,9 +385,14 @@ void FileSystem::mkdir(const char* name)
 	Dentry dir_dentry(i_index, DIR_MODE, dir_size, name);
 	dirGroup[cur_dir].add_Dentry(dir_dentry);
 
+	if (cur_dir > 0) {
+		int parent_dir = dirGroup[cur_dir].getParentDir();
+		dirGroup[parent_dir].setDentryFsize(dirGroup[cur_dir].getName().c_str(), dirGroup[cur_dir].getDirSize(), DIR_MODE);
+	}
+
 	// 在Inode中，目录文件大小要更新
 	// 更新Superblock；更新位图；更新Inode表（包括文件Inode的更新，和当前目录对应的Inode的更新）
-	disk.use_renew(b_index, i_index, FILE_MODE, dir_size, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
+	disk.use_renew(b_index, i_index, DIR_MODE, dir_size, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 
 	// 将当前目录写回数据块
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
@@ -464,25 +453,28 @@ bool FileSystem::isFormat()
 
 void FileSystem::help()	//显示所有命令清单 
 {
-	cout << "*****************************************************" << endl;
-	cout << "*    help            - 显示帮助                     *" << endl;
-	cout << "*    ls              - 显示当前目录清单             *" << endl;
-	cout << "*    cd 目录名       - 转入目录                     *" << endl;
-	cout << "*    touch 文件名    - 在该目录下创建文件           *" << endl;
-	cout << "*    mkdir 目录名    - 创建目录                     *" << endl;
-	cout << "*    rm[ -f] 文件名  - 删除该目录下的文件           *" << endl;
-	cout << "*    rm -rf 目录名   - 删除该目录下的目录           *" << endl;
-	cout << "*    open 文件名     - 打开文件（可读写文件）       *" << endl;
-	cout << "*    df              - 显示文件系统的磁盘使用情况   *" << endl;
-	cout << "*    df -i           - 显示文件系统的i节点使用情况  *" << endl;
-	cout << "*    df -s           - 显示文件系统的超级块信息     *" << endl;
-	cout << "*    q               - 退出文件系统                 *" << endl;
-	cout << "*****************************************************" << endl;
+	if (isLogin) {
+		cout << "*****************************************************" << endl;
+		cout << "*    help            - 显示帮助                     *" << endl;
+		cout << "*    ls              - 显示当前目录清单             *" << endl;
+		cout << "*    cd 目录名       - 转入目录                     *" << endl;
+		cout << "*    touch 文件名    - 在该目录下创建文件           *" << endl;
+		cout << "*    mkdir 目录名    - 创建目录                     *" << endl;
+		cout << "*    rm[ -f] 文件名  - 删除该目录下的文件           *" << endl;
+		cout << "*    rm -rf 目录名   - 删除该目录下的目录           *" << endl;
+		cout << "*    open 文件名     - 打开文件（可读写文件）       *" << endl;
+		cout << "*    df              - 显示文件系统的磁盘使用情况   *" << endl;
+		cout << "*    df -i           - 显示文件系统的i节点使用情况  *" << endl;
+		cout << "*    df -s           - 显示文件系统的超级块信息     *" << endl;
+		cout << "*    q               - 退出文件系统                 *" << endl;
+		cout << "*****************************************************" << endl;
+	}
 	return;
 }
 
 bool FileSystem::cmd(string args)	//处理输入的命令
 {
+	//没有输入命令
 	if (args == "") {
 		return true;
 	}
@@ -635,11 +627,11 @@ void FileSystem::openfile(const char* name)
 			break;
 		}
 		text = "\n" + text;
-		if (!disk.file_write(i_index, text.c_str(), dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize())) {
+		if (!disk.file_write(i_index, text.c_str())) {
 			cout << "文件已关闭..." << endl;
 			break;
 		}
-		dirGroup[cur_dir].setDentryFsize(name, disk.file_size(i_index));
+		dirGroup[cur_dir].setDentryFsize(name, disk.file_size(i_index), FILE_MODE);
 	}
 }
 

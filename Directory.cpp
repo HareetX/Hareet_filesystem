@@ -43,11 +43,6 @@ void Dentry::renewSize()
 	dentry_size = sizeof(i_index) + sizeof(f_mode) + f_name.length() + 1 + sizeof(dentry_size);
 }
 
-//void Dentry::setNo(int No)
-//{
-//	NO = No;
-//}
-
 int Dentry::getIndex()
 {
 	return i_index;
@@ -87,18 +82,6 @@ Directory::Directory()
 	add_Dentry(par_dir);
 }
 
-//Directory::Directory(int dir_type)
-//{
-//	dir_name = "\0";
-//	dentry_num = 0;
-//	parent_dir = NULL;
-//	dentryGroup.clear();
-//	Dentry cur_dir(0, DIR_MODE, ".");
-//	Dentry par_dir(0, DIR_MODE, "..");
-//	add_Dentry(cur_dir);
-//	add_Dentry(par_dir);
-//}
-
 void Directory::setName(const char* str)
 {
 	dir_name = str;
@@ -119,9 +102,9 @@ void Directory::setParentDir(int dir)
 	parent_dir = dir;
 }
 
-void Directory::setDentryFsize(const char* name, int fsize)
+void Directory::setDentryFsize(const char* name, int fsize, int mode)
 {
-	int dentry_index = find_file(name, FILE_MODE);
+	int dentry_index = find_file(name, mode);
 	if (dentry_index == -1) {
 		cout << "未找到文件，无法更新文件大小" << endl;
 		return;
@@ -159,7 +142,6 @@ int Directory::getDirSize()
 {
 	int dirSize = 0;
 	for (int i = 0; i < dentryGroup.size(); i++) {
-		dirSize += dentryGroup[i].getF_Size();
 		dirSize += dentryGroup[i].getSize();
 	}
 	return dirSize;
@@ -179,18 +161,6 @@ int Directory::find_file(const char* name, int mode)
 	}
 	return -1; // 没找到文件，返回 -1
 }
-
-//void Directory::add_Dentry(int index, int mode, const char* str)
-//{
-//	Dentry d;
-//	d.setIndex(index);
-//	d.setMode(mode);
-//	d.setName(str);
-//	d.renewSize();
-//	//Dentry d(int index, int mode, const char* str);
-//	dentryGroup.push_back(d);	// 将新增的目录项添加至目录项组尾部
-//	dentry_num = dentryGroup.size();	// 更新目录项的个数	
-//}
 
 void Directory::add_Dentry(Dentry dentry)
 {
@@ -214,6 +184,7 @@ void Directory::printDir()
 		}
 		else if(mode == FILE_MODE) {
 			cout << "一般文件";
+			//cout << "\t" << dentryGroup[i].getF_Size() << "B" << endl;
 		}
 		else if (mode == OTHER_MODE) {
 			cout << "其他文件";

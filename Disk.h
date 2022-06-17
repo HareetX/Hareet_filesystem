@@ -17,8 +17,6 @@ public:
 	virtual void printInfo() = 0;
 
 	// 块接口
-	//int getNO(); // 获取块号
-
 	virtual void block_read(FILE* fpr) = 0; // 把块内数据从磁盘文件读入程序
 	virtual void block_write(FILE* fpw) = 0; // 把块内数据从程序写入磁盘文件
 };
@@ -37,12 +35,11 @@ public:
 	// 格式化数据块
 	virtual void format();
 
-	// 打印数据块信息
-	virtual void printInfo(); // TODO*
+	// 打印数据块信息（无需任何操作）
+	virtual void printInfo();
 
 	// 数据块接口
 	char* buffer_return(); // 返回指向数据块数据的指针
-	//void buffer_write(char buf[Block_Num * BLOCK_SIZE]); // 根据传入的数组改写数据块的数据
 
 	virtual void block_read(FILE* fpr); // 读入数据块
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
@@ -73,8 +70,8 @@ public:
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
 	void use_renew(); // 创建文件时Superblock更新
-	void use_renew(int blocks_num); // 写入文件占用超出原有块时，更新Superblock的块占用信息
-	void free_renew(int b_cout); // 删除文件时Superblock更新
+	void use_renew(int blocks_num); // 写入文件占用超出原有块时，根据传入的块号blocks_num更新Superblock的块占用信息
+	void free_renew(int b_cout); // 删除文件时，根据传入的需要删除block的数量，更新Superblock
 };
 
 class Block_Bitmap :
@@ -83,7 +80,6 @@ class Block_Bitmap :
 private:
 	bool b_isUsed[Block_Num]; // Block占用情况
 public:
-	//Block_Bitmap(bool isUsed[Block_Num]);
 	Block_Bitmap();
 
 	// 格式化Block位图
@@ -98,8 +94,8 @@ public:
 
 	int balloc(); // 申请空闲的block，返回首个空闲block的索引
 
-	void use_renew(int b_index); // 需要占用空闲block时更新块位图
-	void free_renew(int b_index); // 需要释放空闲block时更新块位图
+	void use_renew(int b_index); // 需要占用空闲block时，根据传入的块号，更新块位图
+	void free_renew(int b_index); // 需要释放空闲block时，根据传入的块号，更新块位图
 };
 
 class Inode_Bitmap :
@@ -108,7 +104,6 @@ class Inode_Bitmap :
 private:
 	bool i_isUsed[INODE_NUM]; // Inode占用情况
 public:
-	//Inode_Bitmap(bool isUsed[INODE_NUM]);
 	Inode_Bitmap();
 
 	// 格式化Inode位图
@@ -121,11 +116,10 @@ public:
 	virtual void block_read(FILE* fpr); // 读入Inode_Bitmap
 	virtual void block_write(FILE* fpw); // 写入磁盘文件
 
-	//bool checkIsUsed(int i_No); // 查看第i_No号的inode是否被占用
 	int ialloc(); // 申请空闲的inode，返回首个空闲inode的索引序号
 
-	void use_renew(int i_index); // 需要占用空闲Inode时更新块位图
-	void free_renew(int i_index); // 需要释放空闲Inode时更新块位图
+	void use_renew(int i_index); // 需要占用空闲Inode时，根据传入的inode索引，更新Inode位图
+	void free_renew(int i_index); // 需要释放空闲Inode时，根据传入的inode索引，更新Inode位图
 };
 
 class Inode
@@ -138,8 +132,6 @@ private:
 	int block_index[BLOCK_INDEX]; // Inode指向的块号序列
 
 public:
-	//Inode(int No, int mode, int size, int index[BLOCK_INDEX]);
-	//Inode(int No);
 	Inode();
 
 	// 格式化Inode
@@ -158,14 +150,11 @@ public:
 	int getF_Size(); // 获得文件大小
 	void setF_Size(int size); // 设置文件大小
 
-	//int getC_Time(); // 获得创建时间
-	//void setC_Time(int time); // 设置创建时间
-
 	bool addBlock(int index); // 增加可用块序号
 
-	char* getFile(char* buffer); // 返回该Inode指向的文件
+	char* getFile(char* buffer); // 传入磁盘数据块缓存，返回该Inode指向的文件数据缓存
 
-	int getIndex(int No); // 返回第No号块的块号
+	int getIndex(int No); // 返回Inode指向的块号序列中的第No号块的块号
 };
 
 // Inode表
@@ -176,7 +165,6 @@ private:
 	Inode inode[INODE_NUM];
 public:
 	Inode_Label();
-	//~Inode_Label();
 
 	// 格式化Inode表
 	virtual void format();
@@ -190,8 +178,10 @@ public:
 
 	Inode* getInode(int No); // 返回第No号Inode
 
-	void use_renew(int i_index, int b_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size); // 创建文件时，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
-	void free_renew(int i_index, int cur_dir_i_index, int cur_dir_size); // 创建文件时，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
+	// 创建文件时，根据传入的空闲inode索引、空闲块块号、文件类型、文件大小、当前目录的inode索引、当前目录的文件数据大小，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
+	void use_renew(int i_index, int b_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size); 
+	// 删除文件时，根据传入的空闲inode索引、当前目录的inode索引、当前目录的文件数据大小，更新Inode表，包括更新文件的inode和文件所在目录文件的inode
+	void free_renew(int i_index, int cur_dir_i_index, int cur_dir_size); 
 };
 
 // Disk单元
@@ -233,23 +223,24 @@ public:
 	// 显示虚拟磁盘超级块占用情况
 	void printSuperblock();
 
-	// 把文件内容从数据块读出
+	// 根据传入的inode索引，把对应的文件的文件内容从数据块读出
 	char* file_read(int i_index);
+	// 根据传入的inode索引，返回对应的文件的文件大小
 	int file_size(int i_index);
-	// 把文件缓存写入数据块
-	bool file_write(int i_index, const char* buf, int cur_dir_i_index, int cur_dir_size);
+
+	// 根据传入的inode索引和文件缓存，把文件缓存写入数据块对应的位置
+	bool file_write(int i_index, const char* buf);
 
 	// Disk与目录的接口
-	//Dentry dentry_read(int dentry_address); // 从数据块读取目录项
-	Dentry dentry_read(int dentry_address, char* buf); // 从数据块读取目录项
-	void dentry_write(int dentry_address, Dentry dentry); // 把目录项写入数据块
-	void dentry_write(int dentry_address, char* buf, Dentry dentry); // 把目录项写入数据块
+	Dentry dentry_read(int dentry_address, char* buf); // 根据传入的目录项地址和数据块的数据缓存，从数据缓存读取并返回一个相应的目录项
+	void dentry_write(int dentry_address, Dentry dentry); // （起始位置是数据块数据缓存的首位）把目录项根据传入的目录项地址，写入数据块数据缓存的对应位置
+	void dentry_write(int dentry_address, char* buf, Dentry dentry); // （起始位置是传入的buf的首位）把目录项根据传入的目录项地址，写入数据块数据缓存的对应位置
 
-	Directory dir_read(int i_No); // 从buffer读取目录
-	void dir_write(int i_No, Directory dir); // 把目录写入buffer
+	Directory dir_read(int i_No); // 根据传入的inode索引，从数据块数据缓存buffer中读取，并返回目录
+	void dir_write(int i_No, Directory dir); // 根据传入的inode索引，把目录写入数据块数据缓存buffer
 
-	// 占用空间时更新Disk
+	// 占用空间时，根据传入的空闲块块号、空闲inode索引、文件类型、文件大小、当前目录的inode索引、当前目录的文件数据大小，更新Disk
 	void use_renew(int b_index, int i_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size);
-	// 释放空间时更新Disk
+	// 释放空间时，根据传入的空闲inode索引、当前目录的inode索引、当前目录的文件数据大小，更新Disk
 	void free_renew(int i_index, int cur_dir_i_index, int cur_dir_size);
 };

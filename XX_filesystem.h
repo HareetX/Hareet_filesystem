@@ -48,7 +48,7 @@ const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - B
 #include "FileSystem.h"
 
 
-bool Open(FileSystem& fs); // 打开磁盘文件
-bool Format(FileSystem& fs); // 格式化虚拟磁盘文件
-void Install(FileSystem& fs); // 读入目录信息
+bool Open(FileSystem& fs); // 打开文件系统
+bool Format(FileSystem& fs); // 格式化文件系统
+void Install(FileSystem& fs); // 安装文件系统，读入目录信息
 void Close(FileSystem& fs); // 关闭磁盘文件
