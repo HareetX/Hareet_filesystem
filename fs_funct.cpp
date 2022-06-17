@@ -10,9 +10,9 @@ bool Open(FileSystem& fs)
 bool Format(FileSystem& fs)
 {
 	if (!(fs.isFormat())) {
-		// ÌáÊ¾ÓÃ»§£¬ÊÇ·ñĞèÒª¸ñÊ½»¯
+		// æç¤ºç”¨æˆ·ï¼Œæ˜¯å¦éœ€è¦æ ¼å¼åŒ–
 		char format = '\0';
-		cout << "ÊÇ·ñĞèÒª¸ñÊ½»¯? [y/n] ( Ä¬ÈÏÎª n )" << endl;
+		cout << "æ˜¯å¦éœ€è¦æ ¼å¼åŒ–? [y/n] ( é»˜è®¤ä¸º n )" << endl;
 		cin >> format;
 		if (format == 'y') {
 			fs.needFormat(true);
@@ -37,8 +37,3 @@ void Close(FileSystem& fs)
 	fs.writeSysFile();
 	fs.closeSysFile();
 }
-
-
-
-
-
