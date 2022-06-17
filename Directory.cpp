@@ -72,7 +72,7 @@ string Dentry::getName()
 Directory::Directory()
 {
 	dir_name = "\0";
-	i_index = -1; // éœ€è¦åç»­åˆå§‹åŒ–
+	i_index = -1; // ĞèÒªºóĞø³õÊ¼»¯
 	dentry_num = 2;
 	parent_dir = 0;
 	dentryGroup.clear();
@@ -106,7 +106,7 @@ void Directory::setDentryFsize(const char* name, int fsize, int mode)
 {
 	int dentry_index = find_file(name, mode);
 	if (dentry_index == -1) {
-		cout << "Î´ï¿½Òµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ğ¡" << endl;
+		cout << "Î´ÕÒµ½ÎÄ¼ş£¬ÎŞ·¨¸üĞÂÎÄ¼ş´óĞ¡" << endl;
 		return;
 	}
 	dentryGroup[dentry_index].setF_Size(fsize);
@@ -159,19 +159,19 @@ int Directory::find_file(const char* name, int mode)
 			return i;
 		}
 	}
-	return -1; // æ²¡æ‰¾åˆ°æ–‡ä»¶ï¼Œè¿”å› -1
+	return -1; // Ã»ÕÒµ½ÎÄ¼ş£¬·µ»Ø -1
 }
 
 void Directory::add_Dentry(Dentry dentry)
 {
-	dentryGroup.push_back(dentry);	// å°†æ–°å¢çš„ç›®å½•é¡¹æ·»åŠ è‡³ç›®å½•é¡¹ç»„å°¾éƒ¨
-	dentry_num = dentryGroup.size();	// æ›´æ–°ç›®å½•é¡¹çš„ä¸ªæ•°
+	dentryGroup.push_back(dentry);	// ½«ĞÂÔöµÄÄ¿Â¼ÏîÌí¼ÓÖÁÄ¿Â¼Ïî×éÎ²²¿
+	dentry_num = dentryGroup.size();	// ¸üĞÂÄ¿Â¼ÏîµÄ¸öÊı
 }
 
 void Directory::del_Dentry(int No)
 {
-	dentryGroup.erase(dentryGroup.begin() + No); // åˆ é™¤ç¬¬Noå·ç›®å½•é¡¹
-	dentry_num = dentryGroup.size();	// æ›´æ–°ç›®å½•é¡¹çš„ä¸ªæ•°
+	dentryGroup.erase(dentryGroup.begin() + No); // É¾³ıµÚNoºÅÄ¿Â¼Ïî
+	dentry_num = dentryGroup.size();	// ¸üĞÂÄ¿Â¼ÏîµÄ¸öÊı
 }
 
 void Directory::printDir()
@@ -180,13 +180,14 @@ void Directory::printDir()
 		cout << dentryGroup[i].getName() << "\t";
 		int mode = dentryGroup[i].getMode();
 		if (mode == DIR_MODE) {
-			cout << "ç›®å½•æ–‡ä»¶";
+			cout << "Ä¿Â¼ÎÄ¼ş";
 		}
 		else if(mode == FILE_MODE) {
-			cout << "ä¸€èˆ¬æ–‡ä»¶";
+			cout << "Ò»°ãÎÄ¼ş";
+			//cout << "\t" << dentryGroup[i].getF_Size() << "B" << endl;
 		}
 		else if (mode == OTHER_MODE) {
-			cout << "å…¶ä»–æ–‡ä»¶";
+			cout << "ÆäËûÎÄ¼ş";
 		}
 		cout << "\t" << dentryGroup[i].getF_Size() << "B" << endl;
 	}
