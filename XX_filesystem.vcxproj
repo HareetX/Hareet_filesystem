@@ -143,13 +143,13 @@
     <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="fs_funct.cpp" />
-    <ClCompile Include="XX_filesystem.cpp" />
+    <ClCompile Include="Hareet_filesystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directory.h" />
     <ClInclude Include="Disk.h" />
     <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="XX_filesystem.h" />
+    <ClInclude Include="Hareet_filesystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
