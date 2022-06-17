@@ -1,106 +1,39 @@
 #pragma once
 #include "XX_filesystem.h"
 
-
-
 int main() {
-	FileSystem fs; // ÊµÀı»¯FileSystem£¬²¢³õÊ¼»¯ÎÄ¼şÏµÍ³
+	FileSystem fs; // å®ä¾‹åŒ–FileSystem
 	
-	// ´ò¿ª´ÅÅÌÎÄ¼ş
+	// æ‰“å¼€ç£ç›˜æ–‡ä»¶
 	if (!Open(fs)) {
-		// ´ò¿ª´ÅÅÌÎÄ¼şÊ§°Ü
-		cout << "´ò¿ª´ÅÅÌÎÄ¼şÊ§°Ü ..." << endl;
+		// æ‰“å¼€ç£ç›˜æ–‡ä»¶å¤±è´¥
+		cout << "æ‰“å¼€ç£ç›˜æ–‡ä»¶å¤±è´¥ ..." << endl;
 		return -1;
-	}// ³É¹¦´ò¿ªÎÄ¼ş
+	}// æˆåŠŸæ‰“å¼€æ–‡ä»¶
 	
-	// ¼ì²éÎÄ¼şÏµÍ³¸ñÊ½»¯ĞèÇó£¬²¢°´Ğè¸ñÊ½»¯
+	// æ£€æŸ¥æ–‡ä»¶ç³»ç»Ÿæ ¼å¼åŒ–éœ€æ±‚ï¼Œå¹¶æŒ‰éœ€æ ¼å¼åŒ–
  	if (!Format(fs)) {
-		// ¸ñÊ½»¯Ê§°Ü
-		cout << "¸ñÊ½»¯Ê§°Ü..." << endl;
+		// æ ¼å¼åŒ–å¤±è´¥
+		cout << "æ ¼å¼åŒ–å¤±è´¥..." << endl;
+		Close(fs);
 		return -1;
-	}// ¸ñÊ½»¯³É¹¦
+	}// æ ¼å¼åŒ–æˆåŠŸ
 
-	//fs.readDirGroup();
-	//fs.ls();
-
-	//fs.writeDirGroup();
-	//fs.ls();
-
-	/*fs.touch("abc.txt");
-	fs.ls();*/
-
-	//fs.mkdir("adgj");
-	//fs.ls();
-
-	///*fs.cd(1);
-	//fs.ls();*/
-
-	//fs.rm_f(1);
-	//fs.ls();
-
-	//fs.cd(1);
-	//fs.touch("dfg.txt");
-	//fs.ls();
-
-	//fs.cd(0);
-	//fs.ls();
-
-	//fs.rm_rf(2);
-	//fs.ls();
-
-	/*Dentry dentry(0, FILE_MODE, "abcd.txt");
-	dentry.setName("abd.txt");
-	dentry.renewSize();*/
-
-	////Inode_Label il;
-	////Disk d;
-	//FileSystem f;
-	//FILE* fpw = fopen("a.sys", "wb");
-	//FILE* fpr = fopen("a.sys", "rb");
-	
-	//// Ö±½Óµ÷ÓÃCµÄ¿âº¯ÊıÑéÖ¤£º¶ÁĞ´Ã»ÎÊÌâ
-
-	///*fseek(fpw, 0, SEEK_SET);
-	//fwrite(&il, sizeof(Inode_Label), 1, fpw);*/
-	///*fseek(fpr, 0, SEEK_SET);
-	//fread(&il, sizeof(Inode_Label), 1, fpr);*/
-
-	//// µ÷ÓÃ°üº¬ÔÚFileSystemÀàÖĞµÄDiskÀàÖĞµÄinode±í¶ÁĞ´º¯ÊıÑéÖ¤£º¶ÁĞ´Ã»ÎÊÌâ
-
-	////d.inode_write(fpw);
-	////d.inode_read(fpr);
-
-	//// µ÷ÓÃFileSystemÀàµÄ¶ÁĞ´diskº¯ÊıÑéÖ¤£º¶ÁĞ´Ã»ÎÊÌâ
-	//// °ÑÖ÷º¯ÊıµÄÎÄ¼ş¶ÁĞ´Ö¸Õë´«½øfs·½±ãµ÷ÊÔ
-	//f.f_read(fpr);
-	//f.f_write(fpw);
-
-	////f.writeSysFile();
-	//f.readSysFile();
-
-	//fclose(fpw);
-	//fclose(fpr);
-
-	//fs.is_Login();
-
-	//fs.help();
-	
-	//string inp;
-	//cin >> inp;
-	//fs.cmd(inp);
-
+	// å®‰è£…æ–‡ä»¶ç³»ç»Ÿï¼ˆè¯»å…¥æ‰€æœ‰ç›®å½•ä¿¡æ¯ï¼‰
+	Install(fs);
 
 	while (1){
-		if (fs.is_Login()) { // ÒÑµÇÂ¼
-			string args = "\0";
-			 //readline.h ÖĞµÄĞĞÊäÈëº¯Êı£¬ÔÚshellÊµÏÖÊ±±È½Ï·½±ã
-			 //readline(args); 
-			cin.ignore();
+		if (fs.is_Login()) { // å·²ç™»å½•
+			fs.printUserPos();
+			string args = "\0"; 
 			getline(cin, args);
-			fs.cmd(args);
+			if (!fs.cmd(args)) { // å¦‚æœè¾“å…¥ q ï¼Œåˆ™è¿”å›falseï¼Œé€€å‡ºå¾ªç¯
+				break;
+			}
 		}
-		else { // Î´µÇÂ¼
-			fs.Login(); // µÇÂ¼
+		else { // æœªç™»å½•
+			fs.Login(); // ç™»å½•
+			fs.help();
 		}
 	}
 	

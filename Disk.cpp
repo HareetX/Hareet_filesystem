@@ -6,10 +6,6 @@ Block::Block(int No)
 	this->No = No;
 }
 
-int Block::getNO()
-{
-	return No;
-}
 
 DataBlock::DataBlock():
 	Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP + BLOCKS_PER_IBITMAP + BLOCKS_PER_ILABEL)
@@ -27,14 +23,6 @@ void DataBlock::format()
 	for (int i = 0; i < Block_Num * BLOCK_SIZE; i++) {
 		buffer[i] = 0;
 	}
-	
-	/*Dentry cur_dir(0, DIR_MODE, ".");
-	Dentry par_dir(0, DIR_MODE, "..");
-
-	*((size_t*)buffer) = 2;
-	dentry_write(sizeof(size_t), cur_dir);
-	dentry_write(sizeof(size_t) + cur_dir.getSize(), par_dir);*/
-
 }
 
 void DataBlock::printInfo()
@@ -46,12 +34,6 @@ char* DataBlock::buffer_return()
 	return buffer;
 }
 
-void DataBlock::buffer_write(char buf[Block_Num * BLOCK_SIZE])
-{
-	for (int i = 0; i < Block_Num * BLOCK_SIZE; i++) {
-		buffer[i] = buf[i];
-	}
-}
 
 void DataBlock::block_read(FILE* fpr)
 {
@@ -65,12 +47,6 @@ void DataBlock::block_write(FILE* fpw)
 	fwrite(buffer, static_cast<size_t>(Block_Num) * BLOCK_SIZE, 1, fpw);
 }
 
-
-Superblock::Superblock(int free_INum, int free_BNum) :Block(0)
-{
-	free_Inode_Num = free_INum;
-	free_Block_Num = free_BNum;
-}
 
 Superblock::Superblock() :Block(0)
 {
@@ -90,7 +66,7 @@ void Superblock::printInfo()
 	cout << "	Inode总数  ：" << s_Inode_Num << endl;
 	cout << "	空闲Inode数：" << free_Inode_Num << endl;
 	cout << "	Block总数  ：" << s_Block_Num << endl;
-	cout << "	空闲Block数：" << free_Inode_Num << endl;
+	cout << "	空闲Block数：" << free_Block_Num << endl;
 }
 
 void Superblock::block_read(FILE* fpr)
@@ -115,18 +91,17 @@ void Superblock::use_renew()
 	free_Inode_Num--;
 }
 
+void Superblock::use_renew(int blocks_num)
+{
+	free_Block_Num -= blocks_num;
+}
+
 void Superblock::free_renew(int b_cout)
 {
 	free_Block_Num += b_cout;
 	free_Inode_Num++;
 }
 
-Block_Bitmap::Block_Bitmap(bool isUsed[Block_Num]): Block(1)
-{
-	for (int i = 0; i < Block_Num; i++) {
-		b_isUsed[i] = isUsed[i];
-	}
-}
 
 Block_Bitmap::Block_Bitmap(): Block(BLOCKS_PER_SUPERBLOCK)
 {
@@ -201,13 +176,6 @@ void Block_Bitmap::free_renew(int b_index)
 }
 
 
-Inode_Bitmap::Inode_Bitmap(bool isUsed[INODE_NUM]): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP)
-{
-	for (int i = 0; i < INODE_NUM; i++) {
-		i_isUsed[i] = isUsed[i];
-	}
-}
-
 Inode_Bitmap::Inode_Bitmap(): Block(4)
 {
 	for (int i = 0; i < INODE_NUM; i++) {
@@ -260,6 +228,7 @@ void Inode_Bitmap::block_write(FILE* fpw)
 	fwrite(i_isUsed, INODE_NUM, 1, fpw);
 }
 
+
 int Inode_Bitmap::ialloc()
 {
 	for (int i = 0; i < INODE_NUM; i++) {
@@ -280,34 +249,12 @@ void Inode_Bitmap::free_renew(int i_index)
 	i_isUsed[i_index] = 0;
 }
 
-Inode::Inode(int No, int mode, int size, int time_c, int index[BLOCK_INDEX])
-{
-	i_No = No;
-	f_mode = mode;
-	f_size = size;
-	c_time = time_c;
-	for (int i = 0; i < BLOCK_INDEX; i++) {
-		block_index[i] = index[i];
-	}
-}
-
-Inode::Inode(int No)
-{
-	i_No = No;
-	f_mode = -1;
-	f_size = -1;
-	c_time = -1;
-	for (int i = 0; i < BLOCK_INDEX; i++) {
-		block_index[i] = -1;
-	}
-}
 
 Inode::Inode()
 {
 	i_No = -1;
 	f_mode = -1;
 	f_size = -1;
-	c_time = -1;
 	for (int i = 0; i < BLOCK_INDEX; i++) {
 		block_index[i] = -1;
 	}
@@ -317,7 +264,6 @@ void Inode::format()
 {
 	f_mode = -1;
 	f_size = -1;
-	c_time = -1;
 	for (int i = 0; i < BLOCK_INDEX; i++) {
 		block_index[i] = -1;
 	}
@@ -325,11 +271,17 @@ void Inode::format()
 
 void Inode::printInfo()
 {
-	cout << "Inode[ " << i_No << " ]：" << endl;
-	cout << "	文件类型：" <<
-		((f_mode) ? "目录文件类型" : "普通文件类型") << endl;
+	cout << "Inode[ " << i_No << " ]：";
+	if (f_mode == FILE_MODE) {
+		cout << "	文件类型：普通文件类型";
+	}
+	else if (f_mode == DIR_MODE) {
+		cout << "	文件类型：目录文件类型";
+	}
+	else {
+		cout<< "	文件类型：其他文件类型";
+	}
 	cout << "	文件大小：" << f_size << " B" << endl;
-	cout << "	创建时间：" << c_time << endl;
 }
 
 int Inode::getI_No()
@@ -362,15 +314,6 @@ void Inode::setF_Size(int size)
 	f_size = size;
 }
 
-int Inode::getC_Time()
-{
-	return c_time;
-}
-
-void Inode::setC_Time(int time)
-{
-	c_time = time;
-}
 
 bool Inode::addBlock(int index)
 {
@@ -411,16 +354,11 @@ int Inode::getIndex(int No)
 
 Inode_Label::Inode_Label(): Block(BLOCKS_PER_SUPERBLOCK + BLOCKS_PER_BBITMAP + BLOCKS_PER_IBITMAP)
 {
-	//inode = new Inode[INODE_NUM];
 	for (int i = 0; i < INODE_NUM; i++) {
 		inode[i].setI_No(i);
 	}
 }
 
-//Inode_Label::~Inode_Label()
-//{
-//	delete inode;
-//}
 
 void Inode_Label::format()
 {
@@ -428,14 +366,18 @@ void Inode_Label::format()
 		inode[i].format();
 	}
 	inode[0].setF_Mode(DIR_MODE);
-	inode[0].setF_Size(0); // TODO
-	inode[0].setC_Time(0); // TODO
+	inode[0].setF_Size(0);
 	inode[0].addBlock(0);
 }
 
 void Inode_Label::printInfo()
 {
-	cout << "TODO" << endl;
+	cout << "已用Inode情况：" << endl;
+	for (int i = 0; i < INODE_NUM; i++) {
+		if (inode[i].getF_Mode() != -1) {
+			inode[i].printInfo();
+		}
+	}
 }
 
 void Inode_Label::block_read(FILE* fpr)
@@ -459,24 +401,23 @@ Inode* Inode_Label::getInode(int No)
 	return &inode[No];
 }
 
-void Inode_Label::use_renew(int i_index, int b_index, int mode, int f_size, Directory dir)
+void Inode_Label::use_renew(int i_index, int b_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size)
 {
 	// 更新文件Inode
-	inode[i_index].setC_Time(0); // TODO
 	inode[i_index].setF_Mode(mode);
 	inode[i_index].setF_Size(f_size);
 	inode[i_index].addBlock(b_index); // 新申请的Inode一定是空的
 
 	// 更新目录文件大小
-	inode[dir.getI_Index()].setF_Size(dir.getDirSize());
+	inode[cur_dir_i_index].setF_Size(cur_dir_size);
 }
 
-void Inode_Label::free_renew(int i_index, Directory dir)
+void Inode_Label::free_renew(int i_index, int cur_dir_i_index, int cur_dir_size)
 {
 	// 更新文件Inode
 	inode[i_index].format();
 	// 更新目录文件大小
-	inode[dir.getI_Index()].setF_Size(dir.getDirSize());
+	inode[cur_dir_i_index].setF_Size(cur_dir_size);
 }
 
 
@@ -493,8 +434,8 @@ void Disk::disk_format()
 	format(i_label);
 	format(d_block);
 
-	Dentry cur_dir(0, FILE_MODE, 0, "."); // 暂时设置为一般文件类型，作测试文件
-	Dentry par_dir(0, FILE_MODE, 0, ".."); // 暂时设置为一般文件类型，作测试文件
+	Dentry cur_dir(0, OTHER_MODE, 0, "."); // 暂时设置为一般文件类型，作测试文件
+	Dentry par_dir(0, OTHER_MODE, 0, ".."); // 暂时设置为一般文件类型，作测试文件
 
 	*((size_t*)d_block.buffer_return()) = 2;
 	dentry_write(sizeof(size_t), cur_dir);
@@ -542,17 +483,77 @@ int Disk::d_ialloc()
 	return i_bmap.ialloc();
 }
 
-
-Dentry Disk::dentry_read(int dentry_address)
+void Disk::printBlocks()
 {
-	char* buf = d_block.buffer_return();
-	int size = *((int*)(buf + dentry_address));
-	int index = *((int*)(buf + dentry_address + sizeof(size)));
-	int mode = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index)));
-	int f_size = *((int*)(buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode)));
-	char* name = buf + dentry_address + sizeof(size) + sizeof(index) + sizeof(mode) + sizeof(f_size);
-	return Dentry(index, mode, f_size, name);
+	b_bmap.printInfo();
 }
+
+void Disk::printInodes()
+{
+	i_bmap.printInfo();
+	i_label.printInfo();
+}
+
+void Disk::printSuperblock()
+{
+	spb.printInfo();
+}
+
+char* Disk::file_read(int i_index)
+{
+	Inode* inode = i_label.getInode(i_index);
+	int fsize = inode->getF_Size();
+	char* buffer = inode->getFile(d_block.buffer_return());
+	buffer[fsize] = '\0';
+	return buffer;
+}
+
+int Disk::file_size(int i_index)
+{
+	return i_label.getInode(i_index)->getF_Size();
+}
+
+bool Disk::file_write(int i_index, const char* buf)
+{
+	Inode* inode = i_label.getInode(i_index);
+	int fsize = inode->getF_Size();
+	int blocks = (fsize + (int)strlen(buf)) / BLOCK_SIZE - fsize / BLOCK_SIZE;
+	vector<int> b_index;
+	b_index.clear();
+	if (blocks > 0) { // 需要申请新的block
+		if (fsize / BLOCK_SIZE + blocks > BLOCK_INDEX) {
+			cout << "文件过大，无法写入文件" << endl;
+			return false;
+		}
+		for (int i = 0; i < blocks; i++) {
+			b_index.push_back(b_bmap.balloc());
+			if (b_index[i] == -1) {
+				cout << "磁盘空间已满，无法写入文件" << endl;
+				return false;
+			}
+		}// 申请到所有需要的blocks
+		for (int i = 0; i < blocks; i++) {
+			b_bmap.use_renew(b_index[i]);
+			spb.use_renew(blocks);
+			inode->addBlock(b_index[i]);
+		}
+	}
+	// 更新文件的inode
+	inode->setF_Size(fsize + strlen(buf));
+
+	char* buffer = inode->getFile(d_block.buffer_return()); // 用到了getFile函数，要注意delete
+	memcpy(buffer + fsize, buf, strlen(buf) + 1);
+	for (int i = 0; i < BLOCK_INDEX; i++) {
+		int i_index = inode->getIndex(i);
+		if (i_index != -1) {
+			int b_address = i_index * BLOCK_SIZE;
+			memcpy(d_block.buffer_return() + b_address, buffer + i * BLOCK_SIZE, BLOCK_SIZE);
+		}
+	}
+	delete[] buffer;
+	return true;
+}
+
 
 Dentry Disk::dentry_read(int dentry_address, char* buf)
 {
@@ -628,24 +629,25 @@ void Disk::dir_write(int i_No, Directory dir)
 		dentry_write(d_address, dir_buf, dentry);
 		d_size = dentry.getSize();
 	}
+
 	for (int i = 0; i < BLOCK_INDEX; i++) {
 		int i_index = inode->getIndex(i);
 		if (i_index != -1) {
-			int b_address = inode->getIndex(i) * BLOCK_SIZE;
+			int b_address = i_index * BLOCK_SIZE;
 			memcpy(d_block.buffer_return() + b_address, dir_buf + i * BLOCK_SIZE, BLOCK_SIZE);
 		}
 	}
 }
 
-void Disk::use_renew(int b_index, int i_index, int mode, int f_size, Directory dir)
+void Disk::use_renew(int b_index, int i_index, int mode, int f_size, int cur_dir_i_index, int cur_dir_size)
 {
 	spb.use_renew();
 	b_bmap.use_renew(b_index);
 	i_bmap.use_renew(i_index);
-	i_label.use_renew(i_index, b_index, mode, f_size, dir);
+	i_label.use_renew(i_index, b_index, mode, f_size, cur_dir_i_index, cur_dir_size);
 }
 
-void Disk::free_renew(int i_index, Directory dir)
+void Disk::free_renew(int i_index, int cur_dir_i_index, int cur_dir_size)
 {
 	Inode* inode = i_label.getInode(i_index);
 	int b_index = -1;
@@ -659,6 +661,6 @@ void Disk::free_renew(int i_index, Directory dir)
 	}
 	spb.free_renew(b_count);
 	i_bmap.free_renew(i_index);
-	i_label.free_renew(i_index, dir);
+	i_label.free_renew(i_index, cur_dir_i_index, cur_dir_size);
 }
 

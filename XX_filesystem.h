@@ -6,30 +6,31 @@
 #include <stdio.h> 
 #include <cstdio>
 #include <sstream>
+#include <windows.h>
 
 
 
 using namespace std;
 
-// ´ÅÅÌÎÄ¼şÏà¹Øºê¶¨Òå
-#define FILESYSTEMNAME "XX_filesystem.sys" // ĞéÄâ´ÅÅÌÎÄ¼şÃû³Æ
-#define BLOCK_SIZE 4096 // block´óĞ¡Îª 4096 B = 4 KB
-#define BLOCK_NUM 10240 // blockÊıÁ¿Îª 10240
-#define INODE_SIZE 128 // inode´óĞ¡Îª 128 B
-#define INODE_NUM 640 // inodeÊıÁ¿Îª 640
+// ç£ç›˜æ–‡ä»¶ç›¸å…³å®å®šä¹‰
+#define FILESYSTEMNAME "XX_filesystem.sys" // è™šæ‹Ÿç£ç›˜æ–‡ä»¶åç§°
+#define BLOCK_SIZE 4096 // blockå¤§å°ä¸º 4096 B = 4 KB
+#define BLOCK_NUM 10240 // blockæ•°é‡ä¸º 10240
+#define INODE_SIZE 128 // inodeå¤§å°ä¸º 128 B
+#define INODE_NUM 640 // inodeæ•°é‡ä¸º 640
 
-#define BLOCKS_PER_SUPERBLOCK 1 // 1¸ösuperblockÕ¼1¸öblock
-#define BLOCKS_PER_IBITMAP 1 // 1¸öinodeÎ»Í¼Õ¼1¸öblock
-#define BLOCKS_PER_BBITMAP 3 // 1¸öblockÎ»Í¼Õ¼3¸öblock £º3 * 4 KB = 12 KB > 10 KB
-#define BLOCKS_PER_ILABEL 20 // 1¸öInodeÇøÕ¼20¸öblock
+#define BLOCKS_PER_SUPERBLOCK 1 // 1ä¸ªsuperblockå 1ä¸ªblock
+#define BLOCKS_PER_IBITMAP 1 // 1ä¸ªinodeä½å›¾å 1ä¸ªblock
+#define BLOCKS_PER_BBITMAP 3 // 1ä¸ªblockä½å›¾å 3ä¸ªblock ï¼š3 * 4 KB = 12 KB > 10 KB
+#define BLOCKS_PER_ILABEL 20 // 1ä¸ªInodeåŒºå 20ä¸ªblock
 
-// InodeÏà¹Øºê¶¨Òå
-#define BLOCK_INDEX 8 // InodeµÄÖ±½Ó¿éÊı
-#define FILE_MODE 0 // ÆÕÍ¨ÎÄ¼şÀàĞÍ
-#define DIR_MODE 1 // Ä¿Â¼ÎÄ¼şÀàĞÍ
-#define OTHER_MODE 2 // ÆäËûÎÄ¼şÀàĞÍ
+// Inodeç›¸å…³å®å®šä¹‰
+#define BLOCK_INDEX 8 // Inodeçš„ç›´æ¥å—æ•°
+#define FILE_MODE 0 // æ™®é€šæ–‡ä»¶ç±»å‹
+#define DIR_MODE 1 // ç›®å½•æ–‡ä»¶ç±»å‹
+#define OTHER_MODE 2 // å…¶ä»–æ–‡ä»¶ç±»å‹
 
-// ´ÅÅÌÎÄ¼şÏà¹Ø³£Á¿
+// ç£ç›˜æ–‡ä»¶ç›¸å…³å¸¸é‡
 const int Sum_Size = BLOCK_SIZE * BLOCK_NUM;
 const int Super_Block_Address  = 0;
 const int Inode_Bitmap_Address = Super_Block_Address  + BLOCK_SIZE * BLOCKS_PER_SUPERBLOCK;
@@ -38,16 +39,16 @@ const int Inode_Label_Address  = Block_Bitmap_Address + BLOCK_SIZE * BLOCKS_PER_
 const int Block_Address =        Inode_Label_Address  + BLOCK_SIZE * BLOCKS_PER_ILABEL;
 const int Block_Num = BLOCK_NUM - BLOCKS_PER_SUPERBLOCK - BLOCKS_PER_IBITMAP - BLOCKS_PER_BBITMAP - BLOCKS_PER_ILABEL;
 
-// Ä¿Â¼Ïà¹Øºê¶¨Òå
-#define ROOT 0 // ¸ùÄ¿Â¼±êÖ¾
-#define DIR  1 // Ò»°ãÄ¿Â¼±êÖ¾
+// ç›®å½•ç›¸å…³å®å®šä¹‰
+#define ROOT 0 // æ ¹ç›®å½•æ ‡å¿—
+#define DIR  1 // ä¸€èˆ¬ç›®å½•æ ‡å¿—
 
 #include "Disk.h"
-#include "ACI.h"
 #include "Directory.h"
 #include "FileSystem.h"
 
 
-bool Open(FileSystem& fs); // ´ò¿ª´ÅÅÌÎÄ¼ş
-bool Format(FileSystem& fs); // ¸ñÊ½»¯ĞéÄâ´ÅÅÌÎÄ¼ş
-void Close(FileSystem& fs); // ¹Ø±Õ´ÅÅÌÎÄ¼ş
+bool Open(FileSystem& fs); // æ‰“å¼€æ–‡ä»¶ç³»ç»Ÿ
+bool Format(FileSystem& fs); // æ ¼å¼åŒ–æ–‡ä»¶ç³»ç»Ÿ
+void Install(FileSystem& fs); // å®‰è£…æ–‡ä»¶ç³»ç»Ÿï¼Œè¯»å…¥ç›®å½•ä¿¡æ¯
+void Close(FileSystem& fs); // å…³é—­ç£ç›˜æ–‡ä»¶
