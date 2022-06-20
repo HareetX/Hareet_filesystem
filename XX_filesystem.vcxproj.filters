@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XX_filesystem.cpp">
+    <ClCompile Include="Hareet_filesystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Disk.cpp">
@@ -32,7 +32,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="XX_filesystem.h">
+    <ClInclude Include="Hareet_filesystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Disk.h">

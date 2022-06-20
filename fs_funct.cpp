@@ -1,5 +1,5 @@
 #pragma once
-#include "XX_filesystem.h"
+#include "Hareet_filesystem.h"
 
 bool Open(FileSystem& fs)
 {
@@ -10,9 +10,9 @@ bool Open(FileSystem& fs)
 bool Format(FileSystem& fs)
 {
 	if (!(fs.isFormat())) {
-		// æç¤ºç”¨æˆ·ï¼Œæ˜¯å¦éœ€è¦æ ¼å¼åŒ–
+		// ÌáÊ¾ÓÃ»§£¬ÊÇ·ñĞèÒª¸ñÊ½»¯
 		char format = '\0';
-		cout << "æ˜¯å¦éœ€è¦æ ¼å¼åŒ–? [y/n] ( é»˜è®¤ä¸º n )" << endl;
+		cout << "ÊÇ·ñĞèÒª¸ñÊ½»¯ [y/n] ( Ä¬ÈÏÎª n )" << endl;
 		cin >> format;
 		if (format == 'y') {
 			fs.needFormat(true);
@@ -37,3 +37,8 @@ void Close(FileSystem& fs)
 	fs.writeSysFile();
 	fs.closeSysFile();
 }
+
+
+
+
+

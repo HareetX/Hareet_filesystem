@@ -1,5 +1,5 @@
 #pragma once
-#include "XX_filesystem.h"
+#include "Hareet_filesystem.h"
 
 
 FileSystem::FileSystem()
@@ -16,7 +16,7 @@ FileSystem::FileSystem()
 	DWORD k = 100;
 	GetComputerName(Cur_Host_Name, &k);
 	userGroup.push_back(User("root", "root"));
-	cur_user = -1; // ç³»ç»Ÿä¸€å¼€å§‹æœªç™»å½•
+	cur_user = -1; // ÏµÍ³Ò»¿ªÊ¼Î´µÇÂ¼
 }
 
 bool FileSystem::is_Login()
@@ -25,22 +25,22 @@ bool FileSystem::is_Login()
 }
 
 
-void FileSystem::Login()	//ç™»å½•ç•Œé¢
+void FileSystem::Login()	//µÇÂ¼½çÃæ
 {
-	 //åªè®¡åˆ’åšä¸€åç”¨æˆ·ä¸ºroot
-	cout << "æœ¬æ–‡ä»¶ç³»ç»Ÿåªæœ‰rootç”¨æˆ·ï¼Œè¯·è¾“å…¥ç”¨æˆ·årootä»¥åŠå¯†ç rootç™»å½•:" << endl;
+	 //Ö»¼Æ»®×öÒ»ÃûÓÃ»§Îªroot
+	cout << "±¾ÎÄ¼şÏµÍ³Ö»ÓĞrootÓÃ»§£¬ÇëÊäÈëÓÃ»§ÃûrootÒÔ¼°ÃÜÂërootµÇÂ¼:" << endl;
 	char username[100] = { 0 };
 	char passwd[100] = { 0 };
 	//inUsername(username);	
-	// è¾“å…¥ç”¨æˆ·å
+	// ÊäÈëÓÃ»§Ãû
 	cout << "username: ";
 	cin >> username;
 	//inPasswd(passwd);		
-	// è¾“å…¥ç”¨æˆ·å¯†ç 
+	// ÊäÈëÓÃ»§ÃÜÂë
 	cout << "passwd: ";
 	cin >> passwd;
 
-	//æ ¸å¯¹ç”¨æˆ·åå’Œå¯†ç 
+	//ºË¶ÔÓÃ»§ÃûºÍÃÜÂë
 	int usersize = userGroup.size();
 	for (int i = 0; i < usersize; i++) {
 		if (userGroup[i].check(username, passwd)) {
@@ -53,7 +53,7 @@ void FileSystem::Login()	//ç™»å½•ç•Œé¢
 		}
 	}
 	if (!isLogin) {
-		cout << "ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯" << endl;
+		cout << "ÓÃ»§Ãû»òÃÜÂë´íÎó" << endl;
 	}
 	
 	cin.ignore();
@@ -63,12 +63,12 @@ void FileSystem::Login()	//ç™»å½•ç•Œé¢
 
 bool FileSystem::readSysFile()
 {
-	if (fr == NULL) { // æ²¡æœ‰ä»¥è¯»æ–¹å¼æ‰“å¼€æ–‡ä»¶
-		cout << "æ–‡ä»¶æœªæ‰“å¼€ï¼Œè¯·å…ˆæ‰“å¼€æ–‡ä»¶ ..." << endl;
+	if (fr == NULL) { // Ã»ÓĞÒÔ¶Á·½Ê½´ò¿ªÎÄ¼ş
+		cout << "ÎÄ¼şÎ´´ò¿ª£¬ÇëÏÈ´ò¿ªÎÄ¼ş ..." << endl;
 		return false;
 	}
-	else { // æ–‡ä»¶å·²æ‰“å¼€
-		// æŠŠç£ç›˜æ–‡ä»¶è¯»å…¥disk
+	else { // ÎÄ¼şÒÑ´ò¿ª
+		// °Ñ´ÅÅÌÎÄ¼ş¶ÁÈëdisk
 		disk.disk_read(fr);
 	}
 	return true;
@@ -76,12 +76,12 @@ bool FileSystem::readSysFile()
 
 bool FileSystem::writeSysFile()
 {
-	if (fw == NULL) { // æ²¡æœ‰ä»¥å†™æ–¹å¼æ‰“å¼€æ–‡ä»¶
-		cout << "æ–‡ä»¶æœªæ‰“å¼€ï¼Œè¯·å…ˆæ‰“å¼€æ–‡ä»¶ ..." << endl;
+	if (fw == NULL) { // Ã»ÓĞÒÔĞ´·½Ê½´ò¿ªÎÄ¼ş
+		cout << "ÎÄ¼şÎ´´ò¿ª£¬ÇëÏÈ´ò¿ªÎÄ¼ş ..." << endl;
 		return false;
 	}
-	else { // æ–‡ä»¶å·²æ‰“å¼€
-		// æŠŠdiskæ•°æ®å†™å…¥ç£ç›˜æ–‡ä»¶
+	else { // ÎÄ¼şÒÑ´ò¿ª
+		// °ÑdiskÊı¾İĞ´Èë´ÅÅÌÎÄ¼ş
 		disk.disk_write(fw);
 	}
 	return true;
@@ -89,31 +89,31 @@ bool FileSystem::writeSysFile()
 
 bool FileSystem::openSysFile()
 {
-	// è¯»æ–¹å¼æ‰“å¼€è™šæ‹Ÿç£ç›˜æ–‡ä»¶
+	// ¶Á·½Ê½´ò¿ªĞéÄâ´ÅÅÌÎÄ¼ş
 	if ((fr = fopen(FILESYSTEMNAME, "rb")) == NULL) {
-		// è™šæ‹Ÿç£ç›˜æ–‡ä»¶ä¸å­˜åœ¨
+		// ĞéÄâ´ÅÅÌÎÄ¼ş²»´æÔÚ
 
-		// åˆ›å»ºè™šæ‹Ÿç£ç›˜æ–‡ä»¶
+		// ´´½¨ĞéÄâ´ÅÅÌÎÄ¼ş
 		if ((fw = fopen(FILESYSTEMNAME, "wb")) == NULL) {
-			// è™šæ‹Ÿç£ç›˜æ–‡ä»¶åˆ›å»ºå¤±è´¥
-			cout << "è™šæ‹Ÿç£ç›˜æ–‡ä»¶åˆ›å»ºå¤±è´¥..." << endl;
+			// ĞéÄâ´ÅÅÌÎÄ¼ş´´½¨Ê§°Ü
+			cout << "ĞéÄâ´ÅÅÌÎÄ¼ş´´½¨Ê§°Ü..." << endl;
 			return false;
 		}
-		// è™šæ‹Ÿæ–‡ä»¶åˆ›å»ºæˆåŠŸï¼Œé‡æ–°æ‰“å¼€æ–‡ä»¶
+		// ĞéÄâÎÄ¼ş´´½¨³É¹¦£¬ÖØĞÂ´ò¿ªÎÄ¼ş
 		fr = fopen(FILESYSTEMNAME, "rb");
 
-		doFormat = true; // åˆ›å»ºæ–°ç£ç›˜æ–‡ä»¶å¿…é¡»æ ¼å¼åŒ–
+		doFormat = true; // ´´½¨ĞÂ´ÅÅÌÎÄ¼ş±ØĞë¸ñÊ½»¯
 	}
-	else { // è™šæ‹Ÿç£ç›˜æ–‡ä»¶å­˜åœ¨
-		// æŠŠç£ç›˜æ–‡ä»¶æ•°æ®è¯»å…¥disk
+	else { // ĞéÄâ´ÅÅÌÎÄ¼ş´æÔÚ
+		// °Ñ´ÅÅÌÎÄ¼şÊı¾İ¶ÁÈëdisk
 		readSysFile();
-		// å†™æ–¹å¼æ‰“å¼€æ–‡ä»¶
+		// Ğ´·½Ê½´ò¿ªÎÄ¼ş
 		if ((fw = fopen(FILESYSTEMNAME, "wb")) == NULL) {
-			// å†™æ–¹å¼æ‰“å¼€æ–‡ä»¶å¤±è´¥
-			cout << " è™šæ‹Ÿç£ç›˜æ–‡ä»¶æ‰“å¼€å¤±è´¥..." << endl;
+			// Ğ´·½Ê½´ò¿ªÎÄ¼şÊ§°Ü
+			cout << " ĞéÄâ´ÅÅÌÎÄ¼ş´ò¿ªÊ§°Ü..." << endl;
 			return false;
 		}
-		// å†™æ–¹å¼æ‰“å¼€æ–‡ä»¶æˆåŠŸï¼ŒæŠŠdiskæ•°æ®å†™å›ç£ç›˜æ–‡ä»¶ ï¼ˆå†™æ–¹å¼æ‰“å¼€æ–‡ä»¶ä¼šæ¸…ç©ºæ–‡ä»¶ï¼‰
+		// Ğ´·½Ê½´ò¿ªÎÄ¼ş³É¹¦£¬°ÑdiskÊı¾İĞ´»Ø´ÅÅÌÎÄ¼ş £¨Ğ´·½Ê½´ò¿ªÎÄ¼ş»áÇå¿ÕÎÄ¼ş£©
 		writeSysFile();
 	}
 	return true;
@@ -130,8 +130,8 @@ void FileSystem::closeSysFile()
 bool FileSystem::formatSysFile()
 {
 	if (doFormat) {
-		disk.disk_format(); // æ ¼å¼åŒ–disk
-		return writeSysFile(); // æŠŠæ ¼å¼åŒ–çš„diskå†™å…¥ç£ç›˜æ–‡ä»¶
+		disk.disk_format(); // ¸ñÊ½»¯disk
+		return writeSysFile(); // °Ñ¸ñÊ½»¯µÄdiskĞ´Èë´ÅÅÌÎÄ¼ş
 	}
 	return true;
 }
@@ -202,10 +202,10 @@ int FileSystem::find_dir(const char* name)
 bool FileSystem::check_fname(const char* name, int mode)
 {
 	if (dirGroup[cur_dir].find_file(name, mode) == -1) { 
-		// æ²¡æ‰¾åˆ°æ–‡ä»¶ï¼Œè¯´æ˜æ²¡æœ‰é‡å
+		// Ã»ÕÒµ½ÎÄ¼ş£¬ËµÃ÷Ã»ÓĞÖØÃû
 		return false;
 	}
-	// æ‰¾åˆ°äº†æ–‡ä»¶ï¼Œè¯´æ˜æœ‰é‡å
+	// ÕÒµ½ÁËÎÄ¼ş£¬ËµÃ÷ÓĞÖØÃû
 	return true;
 }
 
@@ -231,7 +231,7 @@ int FileSystem::getDirTotalSize(int dir)
 	for (int i = dirGroup[dir].getDentryNum() - 1; i >= 0; i--) {
 		Dentry dentry = dirGroup[dir].getDentry(i);
 		dirTotalSize += dentry.getF_Size();
-		if (dentry.getMode() == DIR_MODE) {// é‡åˆ°ç›®å½•æ–‡ä»¶é€’å½’æ±‚å…¶ç›®å½•ä¸‹æ–‡ä»¶æ€»å¤§å°
+		if (dentry.getMode() == DIR_MODE) {// Óöµ½Ä¿Â¼ÎÄ¼şµİ¹éÇóÆäÄ¿Â¼ÏÂÎÄ¼ş×Ü´óĞ¡
 			dirTotalSize += getDirTotalSize(find_dir(dentry.getIndex()));
 		}
 	}
@@ -275,15 +275,15 @@ void FileSystem::ls()
 		cout << dentry.getName() << "\t";
 		int mode = dentry.getMode();
 		if (mode == DIR_MODE) {
-			cout << "ç›®å½•æ–‡ä»¶";
+			cout << "Ä¿Â¼ÎÄ¼ş";
 			cout << "\t" << dentry.getF_Size()  + getDirTotalSize(find_dir(dentry.getName().c_str())) << "B" << endl;
 		}
 		else if (mode == FILE_MODE) {
-			cout << "ä¸€èˆ¬æ–‡ä»¶";
+			cout << "Ò»°ãÎÄ¼ş";
 			cout << "\t" << dentry.getF_Size() << "B" << endl;
 		}
 		else if (mode == OTHER_MODE) {
-			cout << "å…¶ä»–æ–‡ä»¶" << endl;
+			cout << "ÆäËûÎÄ¼ş" << endl;
 		}
 	}
 }
@@ -291,88 +291,88 @@ void FileSystem::ls()
 void FileSystem::cd(int cur)
 {
 	if (cur == cur_dir) {
-		cout << "å·²åœ¨è¯¥ç›®å½•ä¸‹" << endl;
+		cout << "ÒÑÔÚ¸ÃÄ¿Â¼ÏÂ" << endl;
 	}
 	else if (cur < dirGroup.size() && cur >= 0) {
 		cur_dir = cur;
 	}
 	else {
-		cout << "æ²¡æœ‰æ‰¾åˆ°è¯¥ç›®å½•" << endl;
+		cout << "Ã»ÓĞÕÒµ½¸ÃÄ¿Â¼" << endl;
 	}
 }
 
 void FileSystem::touch(const char* name)
 {
-	// æ£€æŸ¥æ˜¯å¦æœ‰é‡åæ–‡ä»¶
+	// ¼ì²éÊÇ·ñÓĞÖØÃûÎÄ¼ş
 	if (check_fname(name, FILE_MODE)) {
-		cout << "æ–‡ä»¶åé‡å¤ï¼Œè¯·æ›´æ¢æ–‡ä»¶å" << endl;
+		cout << "ÎÄ¼şÃûÖØ¸´£¬Çë¸ü»»ÎÄ¼şÃû" << endl;
 		return;
 	}
-	// ç”³è¯·Inodeï¼ŒBlock
+	// ÉêÇëInode£¬Block
 	int i_index = disk.d_ialloc();
 	int b_index = disk.d_balloc();
 	if (i_index == -1 || b_index == -1) {
-		cout << "ç£ç›˜ç©ºé—´ä¸å¤Ÿï¼Œæ— æ³•åˆ›å»ºæ–‡ä»¶" << endl;
+		cout << "´ÅÅÌ¿Õ¼ä²»¹»£¬ÎŞ·¨´´½¨ÎÄ¼ş" << endl;
 		return;
 	}	
 	
-	// åœ¨å½“å‰ç›®å½•æ·»åŠ ç›¸åº”çš„ç›®å½•é¡¹
+	// ÔÚµ±Ç°Ä¿Â¼Ìí¼ÓÏàÓ¦µÄÄ¿Â¼Ïî
 	Dentry f_dentry(i_index, FILE_MODE, 0, name);
 	dirGroup[cur_dir].add_Dentry(f_dentry);
-	// æ›´æ–°æŒ‡å‘å½“å‰ç›®å½•çš„ç›®å½•é¡¹çš„æ–‡ä»¶å¤§å°
+	// ¸üĞÂÖ¸Ïòµ±Ç°Ä¿Â¼µÄÄ¿Â¼ÏîµÄÎÄ¼ş´óĞ¡
 	if (cur_dir > 0) {
 		int parent_dir = dirGroup[cur_dir].getParentDir();
 		dirGroup[parent_dir].setDentryFsize(dirGroup[cur_dir].getName().c_str(), dirGroup[cur_dir].getDirSize(), DIR_MODE);
 	}
 
-	// åœ¨Inodeä¸­ï¼Œç›®å½•æ–‡ä»¶å¤§å°è¦æ›´æ–°
-	// æ›´æ–°Superblockï¼›æ›´æ–°ä½å›¾ï¼›æ›´æ–°Inodeè¡¨ï¼ˆåŒ…æ‹¬æ–‡ä»¶Inodeçš„æ›´æ–°ï¼Œå’Œå½“å‰ç›®å½•å¯¹åº”çš„Inodeçš„æ›´æ–°ï¼‰
+	// ÔÚInodeÖĞ£¬Ä¿Â¼ÎÄ¼ş´óĞ¡Òª¸üĞÂ
+	// ¸üĞÂSuperblock£»¸üĞÂÎ»Í¼£»¸üĞÂInode±í£¨°üÀ¨ÎÄ¼şInodeµÄ¸üĞÂ£¬ºÍµ±Ç°Ä¿Â¼¶ÔÓ¦µÄInodeµÄ¸üĞÂ£©
 	disk.use_renew(b_index, i_index, FILE_MODE, 0, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 	
-	// å°†å½“å‰ç›®å½•å†™å›æ•°æ®å—
+	// ½«µ±Ç°Ä¿Â¼Ğ´»ØÊı¾İ¿é
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
 void FileSystem::rm_f(const char* name)
 {
-	// åœ¨å½“å‰ç›®å½•åˆ é™¤ç›¸åº”çš„ç›®å½•é¡¹
+	// ÔÚµ±Ç°Ä¿Â¼É¾³ıÏàÓ¦µÄÄ¿Â¼Ïî
 	int d_index = find_file(name, FILE_MODE);
 	if (d_index == -1) {
-		cout << "æœªæ‰¾åˆ°æ–‡ä»¶" << endl;
+		cout << "Î´ÕÒµ½ÎÄ¼ş" << endl;
 		return;
 	}
 
-	// è®°å½•åˆ é™¤æ–‡ä»¶çš„inodeç´¢å¼•
+	// ¼ÇÂ¼É¾³ıÎÄ¼şµÄinodeË÷Òı
 	int i_index = dirGroup[cur_dir].getDentry(d_index).getIndex();
 	
-	// åˆ é™¤æ–‡ä»¶çš„ç›®å½•é¡¹
+	// É¾³ıÎÄ¼şµÄÄ¿Â¼Ïî
 	dirGroup[cur_dir].del_Dentry(d_index);
 	
-	// æ›´æ–°Superblockï¼›æ›´æ–°ä½å›¾ï¼›æ›´æ–°Inodeè¡¨ï¼ˆåŒ…æ‹¬æ–‡ä»¶Inodeçš„æ›´æ–°ï¼Œå’Œå½“å‰ç›®å½•å¯¹åº”çš„Inodeçš„æ›´æ–°ï¼‰
+	// ¸üĞÂSuperblock£»¸üĞÂÎ»Í¼£»¸üĞÂInode±í£¨°üÀ¨ÎÄ¼şInodeµÄ¸üĞÂ£¬ºÍµ±Ç°Ä¿Â¼¶ÔÓ¦µÄInodeµÄ¸üĞÂ£©
 	disk.free_renew(i_index, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 	
-	// å°†å½“å‰ç›®å½•å†™å›æ•°æ®å—
+	// ½«µ±Ç°Ä¿Â¼Ğ´»ØÊı¾İ¿é
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
 
 void FileSystem::mkdir(const char* name)
 {
-	// æ£€æŸ¥æ˜¯å¦æœ‰é‡åç›®å½•
+	// ¼ì²éÊÇ·ñÓĞÖØÃûÄ¿Â¼
 	if (check_fname(name, DIR_MODE)) {
-		cout << "ç›®å½•åé‡å¤ï¼Œè¯·æ›´æ¢ç›®å½•å" << endl;
+		cout << "Ä¿Â¼ÃûÖØ¸´£¬Çë¸ü»»Ä¿Â¼Ãû" << endl;
 		return;
 	}
 
-	// ç”³è¯·Inodeï¼ŒBlock
+	// ÉêÇëInode£¬Block
 	int i_index = disk.d_ialloc();
 	int b_index = disk.d_balloc();
 	if (i_index == -1 || b_index == -1) {
-		cout << "ç£ç›˜ç©ºé—´ä¸å¤Ÿï¼Œæ— æ³•åˆ›å»ºæ–‡ä»¶" << endl;
+		cout << "´ÅÅÌ¿Õ¼ä²»¹»£¬ÎŞ·¨´´½¨ÎÄ¼ş" << endl;
 		return;
 	}
 
-	// åœ¨å½“å‰ç›®å½•æ·»åŠ ç›¸åº”çš„ç›®å½•é¡¹
+	// ÔÚµ±Ç°Ä¿Â¼Ìí¼ÓÏàÓ¦µÄÄ¿Â¼Ïî
 	Directory dir;
 	dir.setName(name);
 	dir.setI_Index(i_index);
@@ -390,32 +390,32 @@ void FileSystem::mkdir(const char* name)
 		dirGroup[parent_dir].setDentryFsize(dirGroup[cur_dir].getName().c_str(), dirGroup[cur_dir].getDirSize(), DIR_MODE);
 	}
 
-	// åœ¨Inodeä¸­ï¼Œç›®å½•æ–‡ä»¶å¤§å°è¦æ›´æ–°
-	// æ›´æ–°Superblockï¼›æ›´æ–°ä½å›¾ï¼›æ›´æ–°Inodeè¡¨ï¼ˆåŒ…æ‹¬æ–‡ä»¶Inodeçš„æ›´æ–°ï¼Œå’Œå½“å‰ç›®å½•å¯¹åº”çš„Inodeçš„æ›´æ–°ï¼‰
+	// ÔÚInodeÖĞ£¬Ä¿Â¼ÎÄ¼ş´óĞ¡Òª¸üĞÂ
+	// ¸üĞÂSuperblock£»¸üĞÂÎ»Í¼£»¸üĞÂInode±í£¨°üÀ¨ÎÄ¼şInodeµÄ¸üĞÂ£¬ºÍµ±Ç°Ä¿Â¼¶ÔÓ¦µÄInodeµÄ¸üĞÂ£©
 	disk.use_renew(b_index, i_index, DIR_MODE, dir_size, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
 
-	// å°†å½“å‰ç›®å½•å†™å›æ•°æ®å—
+	// ½«µ±Ç°Ä¿Â¼Ğ´»ØÊı¾İ¿é
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 	disk.dir_write(i_index, dir);
 }
 
 void FileSystem::rm_rf(const char* name)
 {
-	// æ³¨æ„ï¼šåˆ é™¤ç›®å½•è¦æŠŠè¯¥ç›®å½•ä¸‹æ‰€æœ‰æ–‡ä»¶éƒ½åˆ é™¤ï¼ˆå¯èƒ½ç”¨åˆ°é€’å½’å‡½æ•°ï¼‰
-	// åœ¨å½“å‰ç›®å½•æ‰¾åˆ°å¯¹åº”çš„ç›®å½•é¡¹
+	// ×¢Òâ£ºÉ¾³ıÄ¿Â¼Òª°Ñ¸ÃÄ¿Â¼ÏÂËùÓĞÎÄ¼ş¶¼É¾³ı£¨¿ÉÄÜÓÃµ½µİ¹éº¯Êı£©
+	// ÔÚµ±Ç°Ä¿Â¼ÕÒµ½¶ÔÓ¦µÄÄ¿Â¼Ïî
 	int d_index = find_file(name, DIR_MODE);
 	if (d_index == -1) {
-		cout << "æœªæ‰¾åˆ°ç›®å½•" << endl;
+		cout << "Î´ÕÒµ½Ä¿Â¼" << endl;
 		return;
 	}
 	int cur = cur_dir;
 	int dir = find_dir(name);
 
 	if (d_index == -1) {
-		cout << "æœªæ‰¾åˆ°ç›®å½•" << endl;
+		cout << "Î´ÕÒµ½Ä¿Â¼" << endl;
 		return;
 	}
-	// è®°å½•åˆ é™¤ç›®å½•çš„inodeç´¢å¼•
+	// ¼ÇÂ¼É¾³ıÄ¿Â¼µÄinodeË÷Òı
 	int i_index = dirGroup[dir].getI_Index();
 	
 	cd(dir);
@@ -431,13 +431,13 @@ void FileSystem::rm_rf(const char* name)
 	}
 	cd(cur);
 
-	// åˆ é™¤å¯¹åº”ç›®å½•é¡¹å’Œç›®å½•
+	// É¾³ı¶ÔÓ¦Ä¿Â¼ÏîºÍÄ¿Â¼
 	dirGroup[cur_dir].del_Dentry(d_index);
 	dirGroup.erase(dirGroup.begin() + dir);
 
-	// æ›´æ–°Superblockï¼›æ›´æ–°ä½å›¾ï¼›æ›´æ–°Inodeè¡¨ï¼ˆåŒ…æ‹¬æ–‡ä»¶Inodeçš„æ›´æ–°ï¼Œå’Œå½“å‰ç›®å½•å¯¹åº”çš„Inodeçš„æ›´æ–°ï¼‰
+	// ¸üĞÂSuperblock£»¸üĞÂÎ»Í¼£»¸üĞÂInode±í£¨°üÀ¨ÎÄ¼şInodeµÄ¸üĞÂ£¬ºÍµ±Ç°Ä¿Â¼¶ÔÓ¦µÄInodeµÄ¸üĞÂ£©
 	disk.free_renew(i_index, dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir].getDirSize());
-	// å°†å½“å‰ç›®å½•å†™å›æ•°æ®å—
+	// ½«µ±Ç°Ä¿Â¼Ğ´»ØÊı¾İ¿é
 	disk.dir_write(dirGroup[cur_dir].getI_Index(), dirGroup[cur_dir]);
 }
 
@@ -451,41 +451,41 @@ bool FileSystem::isFormat()
 	return doFormat;
 }
 
-void FileSystem::help()	//æ˜¾ç¤ºæ‰€æœ‰å‘½ä»¤æ¸…å• 
+void FileSystem::help()	//ÏÔÊ¾ËùÓĞÃüÁîÇåµ¥ 
 {
 	if (isLogin) {
 		cout << "*****************************************************" << endl;
-		cout << "*    help            - æ˜¾ç¤ºå¸®åŠ©                     *" << endl;
-		cout << "*    ls              - æ˜¾ç¤ºå½“å‰ç›®å½•æ¸…å•             *" << endl;
-		cout << "*    cd ç›®å½•å       - è½¬å…¥ç›®å½•                     *" << endl;
-		cout << "*    touch æ–‡ä»¶å    - åœ¨è¯¥ç›®å½•ä¸‹åˆ›å»ºæ–‡ä»¶           *" << endl;
-		cout << "*    mkdir ç›®å½•å    - åˆ›å»ºç›®å½•                     *" << endl;
-		cout << "*    rm[ -f] æ–‡ä»¶å  - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æ–‡ä»¶           *" << endl;
-		cout << "*    rm -rf ç›®å½•å   - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„ç›®å½•           *" << endl;
-		cout << "*    open æ–‡ä»¶å     - æ‰“å¼€æ–‡ä»¶ï¼ˆå¯è¯»å†™æ–‡ä»¶ï¼‰       *" << endl;
-		cout << "*    df              - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ç£ç›˜ä½¿ç”¨æƒ…å†µ   *" << endl;
-		cout << "*    df -i           - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ièŠ‚ç‚¹ä½¿ç”¨æƒ…å†µ  *" << endl;
-		cout << "*    df -s           - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„è¶…çº§å—ä¿¡æ¯     *" << endl;
-		cout << "*    q               - é€€å‡ºæ–‡ä»¶ç³»ç»Ÿ                 *" << endl;
+		cout << "*    help            - ÏÔÊ¾°ïÖú                     *" << endl;
+		cout << "*    ls              - ÏÔÊ¾µ±Ç°Ä¿Â¼Çåµ¥             *" << endl;
+		cout << "*    cd Ä¿Â¼Ãû       - ×ªÈëÄ¿Â¼                     *" << endl;
+		cout << "*    touch ÎÄ¼şÃû    - ÔÚ¸ÃÄ¿Â¼ÏÂ´´½¨ÎÄ¼ş           *" << endl;
+		cout << "*    mkdir Ä¿Â¼Ãû    - ´´½¨Ä¿Â¼                     *" << endl;
+		cout << "*    rm[ -f] ÎÄ¼şÃû  - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÎÄ¼ş           *" << endl;
+		cout << "*    rm -rf Ä¿Â¼Ãû   - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ¿Â¼           *" << endl;
+		cout << "*    open ÎÄ¼şÃû     - ´ò¿ªÎÄ¼ş£¨¿É¶ÁĞ´ÎÄ¼ş£©       *" << endl;
+		cout << "*    df              - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ´ÅÅÌÊ¹ÓÃÇé¿ö   *" << endl;
+		cout << "*    df -i           - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄi½ÚµãÊ¹ÓÃÇé¿ö  *" << endl;
+		cout << "*    df -s           - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ³¬¼¶¿éĞÅÏ¢     *" << endl;
+		cout << "*    q               - ÍË³öÎÄ¼şÏµÍ³                 *" << endl;
 		cout << "*****************************************************" << endl;
 	}
 	return;
 }
 
-bool FileSystem::cmd(string args)	//å¤„ç†è¾“å…¥çš„å‘½ä»¤
+bool FileSystem::cmd(string args)	//´¦ÀíÊäÈëµÄÃüÁî
 {
-	//æ²¡æœ‰è¾“å…¥å‘½ä»¤
+	//Ã»ÓĞÊäÈëÃüÁî
 	if (args == "") {
 		return true;
 	}
-	//ç”¨äºå­˜æ”¾åˆ†å‰²åçš„å­—ç¬¦ä¸²
+	//ÓÃÓÚ´æ·Å·Ö¸îºóµÄ×Ö·û´®
 	vector<string> res;
-	//å¾…åˆ†å‰²çš„å­—ç¬¦ä¸²ï¼Œå«æœ‰ç©ºæ ¼ 
+	//´ı·Ö¸îµÄ×Ö·û´®£¬º¬ÓĞ¿Õ¸ñ 
 	string inp = args;
 	string result;
-	//å°†å­—ç¬¦ä¸²è¯»åˆ°inputä¸­ 
+	//½«×Ö·û´®¶Áµ½inputÖĞ 
 	stringstream input(inp);
-	//ä¾æ¬¡è¾“å‡ºåˆ°resultä¸­ï¼Œå¹¶å­˜å…¥resä¸­ 
+	//ÒÀ´ÎÊä³öµ½resultÖĞ£¬²¢´æÈëresÖĞ 
 	while (input >> result)
 		res.push_back(result);
 	
@@ -494,10 +494,10 @@ bool FileSystem::cmd(string args)	//å¤„ç†è¾“å…¥çš„å‘½ä»¤
 	if (res[0] == "ls") {
 		ls();	
 	}
-	// è½¬åˆ°è¯¥ç›®å½•ï¼ˆcdï¼‰
+	// ×ªµ½¸ÃÄ¿Â¼£¨cd£©
 	else if (res[0] == "cd") {
-		if (res.size() <= 1) { // æœªè¾“å…¥è½¬å…¥ç›®å½•å
-			cout << "æœªè¾“å…¥è½¬å…¥ç›®å½•å" << endl;
+		if (res.size() <= 1) { // Î´ÊäÈë×ªÈëÄ¿Â¼Ãû
+			cout << "Î´ÊäÈë×ªÈëÄ¿Â¼Ãû" << endl;
 			return true;
 		}
 		else if (res[1] == ".") {
@@ -507,96 +507,96 @@ bool FileSystem::cmd(string args)	//å¤„ç†è¾“å…¥çš„å‘½ä»¤
 			inp2 = dirGroup[cur_dir].getParentDir();
 		}
 		else {
-			inp2 = find_dir(res[1].c_str()); // æ‰¾åˆ°ç›¸åº”çš„ç›®å½•
+			inp2 = find_dir(res[1].c_str()); // ÕÒµ½ÏàÓ¦µÄÄ¿Â¼
 		}
 		cd(inp2);
 	}
-	// åœ¨è¯¥ç›®å½•ä¸‹åˆ›å»ºæ–‡ä»¶ï¼ˆtouchï¼‰
+	// ÔÚ¸ÃÄ¿Â¼ÏÂ´´½¨ÎÄ¼ş£¨touch£©
 	else if (res[0] == "touch") {
-		if (res.size() <= 1) { // æœªè¾“å…¥æ–‡ä»¶å
-			cout << "æœªè¾“å…¥æ–‡ä»¶å" << endl;
+		if (res.size() <= 1) { // Î´ÊäÈëÎÄ¼şÃû
+			cout << "Î´ÊäÈëÎÄ¼şÃû" << endl;
 			return true;
 		}
 		touch(res[1].c_str());
 	}
-	// åœ¨è¯¥ç›®å½•ä¸‹åˆ›å»ºç›®å½•ï¼ˆmkdirï¼‰
+	// ÔÚ¸ÃÄ¿Â¼ÏÂ´´½¨Ä¿Â¼£¨mkdir£©
 	else if (res[0] == "mkdir") {
-		if (res.size() <= 1) { // æœªè¾“å…¥ç›®å½•å
-			cout << "æœªè¾“å…¥ç›®å½•å" << endl;
+		if (res.size() <= 1) { // Î´ÊäÈëÄ¿Â¼Ãû
+			cout << "Î´ÊäÈëÄ¿Â¼Ãû" << endl;
 			return true;
 		}
 		mkdir(res[1].c_str());
 	}
-	// åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æ–‡ä»¶ï¼ˆrmï¼‰
-	else if (res[0] == "rm") {// é»˜è®¤ä¸ºåˆ é™¤æ–‡ä»¶åŠŸèƒ½
+	// É¾³ı¸ÃÄ¿Â¼ÏÂµÄÎÄ¼ş£¨rm£©
+	else if (res[0] == "rm") {// Ä¬ÈÏÎªÉ¾³ıÎÄ¼ş¹¦ÄÜ
 		if (res.size() <= 1) {
-			cout << "æœªè¾“å…¥è¦åˆ é™¤çš„æ–‡ä»¶å" << endl;
-			/*cout << "rm[ -f] - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æ–‡ä»¶" << endl;
-			cout << "rm -rf  - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„ç›®å½•" << endl;*/
+			cout << "Î´ÊäÈëÒªÉ¾³ıµÄÎÄ¼şÃû" << endl;
+			/*cout << "rm[ -f] - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÎÄ¼ş" << endl;
+			cout << "rm -rf  - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ¿Â¼" << endl;*/
 		}
 		else if (res[1][0] == '-') {
-			if (res[1] == "-f") { // åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æŸæ–‡ä»¶ï¼ˆrm_fï¼‰
+			if (res[1] == "-f") { // É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ³ÎÄ¼ş£¨rm_f£©
 				if (res.size() <= 2) {
-					cout << "æœªè¾“å…¥è¦åˆ é™¤çš„æ–‡ä»¶å" << endl;
+					cout << "Î´ÊäÈëÒªÉ¾³ıµÄÎÄ¼şÃû" << endl;
 				}
 				else {
 					rm_f(res[2].c_str());
 				}
 			}
-			else if (res[1] == "-rf") { // åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æŸç›®å½•ï¼ˆrm_rfï¼‰
+			else if (res[1] == "-rf") { // É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ³Ä¿Â¼£¨rm_rf£©
 				if (res.size() <= 2) {
-					cout << "æœªè¾“å…¥è¦åˆ é™¤çš„ç›®å½•å" << endl;
+					cout << "Î´ÊäÈëÒªÉ¾³ıµÄÄ¿Â¼Ãû" << endl;
 				}
 				else {
 					rm_rf(res[2].c_str());
 				}
 			}
 			else {
-				cout << "rm[ -f] - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æ–‡ä»¶" << endl;
-				cout << "rm -rf  - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„ç›®å½•" << endl;
+				cout << "rm[ -f] - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÎÄ¼ş" << endl;
+				cout << "rm -rf  - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ¿Â¼" << endl;
 			}
 		}
 		else {
-			/*cout << "rm[ -f] - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„æ–‡ä»¶" << endl;
-			cout << "rm -rf  - åˆ é™¤è¯¥ç›®å½•ä¸‹çš„ç›®å½•" << endl;*/
+			/*cout << "rm[ -f] - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÎÄ¼ş" << endl;
+			cout << "rm -rf  - É¾³ı¸ÃÄ¿Â¼ÏÂµÄÄ¿Â¼" << endl;*/
 			rm_f(res[1].c_str());
 		}
 	}
-	// æ‰“å¼€ä¸€èˆ¬æ–‡ä»¶
+	// ´ò¿ªÒ»°ãÎÄ¼ş
 	else if (res[0] == "open") {
-		if (res.size() <= 1) { // æœªè¾“å…¥æ–‡ä»¶å
-			cout << "æœªè¾“å…¥æ–‡ä»¶å" << endl;
+		if (res.size() <= 1) { // Î´ÊäÈëÎÄ¼şÃû
+			cout << "Î´ÊäÈëÎÄ¼şÃû" << endl;
 			return true;
 		}
 		openfile(res[1].c_str());
 	}
-	// æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ç£ç›˜æˆ–ièŠ‚ç‚¹ä½¿ç”¨æƒ…å†µ
+	// ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ´ÅÅÌ»òi½ÚµãÊ¹ÓÃÇé¿ö
 	else if (res[0] == "df") {
-		if (res.size() <= 1) { // æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ç£ç›˜ä½¿ç”¨æƒ…å†µ
+		if (res.size() <= 1) { // ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ´ÅÅÌÊ¹ÓÃÇé¿ö
 			df();
 		}
-		else if (res[1] == "-i") { // æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ièŠ‚ç‚¹ä½¿ç”¨æƒ…å†µ
+		else if (res[1] == "-i") { // ÏÔÊ¾ÎÄ¼şÏµÍ³µÄi½ÚµãÊ¹ÓÃÇé¿ö
 			df_i();
 		}
-		else if (res[1] == "-s") { // æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„è¶…çº§å—ä½¿ç”¨æƒ…å†µ
+		else if (res[1] == "-s") { // ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ³¬¼¶¿éÊ¹ÓÃÇé¿ö
 			df_s();
 		}
 		else {
-			cout << "df      - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ç£ç›˜ä½¿ç”¨æƒ…å†µ" << endl;
-			cout << "df -i   - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„ièŠ‚ç‚¹ä½¿ç”¨æƒ…å†µ" << endl;
-			cout << "df -s   - æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿçš„è¶…çº§å—ä½¿ç”¨æƒ…å†µ" << endl;
+			cout << "df      - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ´ÅÅÌÊ¹ÓÃÇé¿ö" << endl;
+			cout << "df -i   - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄi½ÚµãÊ¹ÓÃÇé¿ö" << endl;
+			cout << "df -s   - ÏÔÊ¾ÎÄ¼şÏµÍ³µÄ³¬¼¶¿éÊ¹ÓÃÇé¿ö" << endl;
 		}
 	}
-	// æ˜¾ç¤ºå¸®åŠ©
+	// ÏÔÊ¾°ïÖú
 	else if (res[0] == "help") {
 		help();
 	}
-	// é€€å‡ºç³»ç»Ÿ
+	// ÍË³öÏµÍ³
 	else if (res[0] == "q") {
 		return false;
 	}
 	else {
-		cout << "æŠ±æ­‰ï¼Œæ²¡æœ‰è¯¥å‘½ä»¤" << endl;
+		cout << "±§Ç¸£¬Ã»ÓĞ¸ÃÃüÁî" << endl;
 	}
 	
 	return true;
@@ -604,31 +604,31 @@ bool FileSystem::cmd(string args)	//å¤„ç†è¾“å…¥çš„å‘½ä»¤
 
 void FileSystem::openfile(const char* name)
 {
-	// æ‰¾åˆ°éœ€è¦æ‰“å¼€çš„æ–‡ä»¶
+	// ÕÒµ½ĞèÒª´ò¿ªµÄÎÄ¼ş
 	int d_index = find_file(name, FILE_MODE);
 	if (d_index == -1) {
-		cout << "æœªæ‰¾åˆ°æ–‡ä»¶" << endl;
+		cout << "Î´ÕÒµ½ÎÄ¼ş" << endl;
 		return;
 	}
 	int i_index = dirGroup[cur_dir].getDentry(d_index).getIndex();
-	cout << name << "å·²æ‰“å¼€..." << endl;
-	// è¯»å‡ºæ–‡æœ¬å†…å®¹
+	cout << name << "ÒÑ´ò¿ª..." << endl;
+	// ¶Á³öÎÄ±¾ÄÚÈİ
 	char* context = disk.file_read(i_index);
 	cout << context << endl;
 	delete[] context;
 
-	// ç”¨æˆ·å¯ä»¥è¾“å…¥æ–‡æœ¬å†…å®¹
-	cout << "æ‚¨å¯å†™å…¥æ–‡æœ¬å†…å®¹ï¼ˆè¾“å…¥ q é€€å‡ºç¼–è¾‘ï¼‰ï¼š" << endl;
+	// ÓÃ»§¿ÉÒÔÊäÈëÎÄ±¾ÄÚÈİ
+	cout << "Äú¿ÉĞ´ÈëÎÄ±¾ÄÚÈİ£¨ÊäÈë q ÍË³ö±à¼­£©£º" << endl;
 	string text = "\0";
 	while (1) {
 		getline(cin, text);
 		if (text == "q") {
-			cout << "æ–‡ä»¶å·²å…³é—­..." << endl;
+			cout << "ÎÄ¼şÒÑ¹Ø±Õ..." << endl;
 			break;
 		}
 		text = "\n" + text;
 		if (!disk.file_write(i_index, text.c_str())) {
-			cout << "æ–‡ä»¶å·²å…³é—­..." << endl;
+			cout << "ÎÄ¼şÒÑ¹Ø±Õ..." << endl;
 			break;
 		}
 		dirGroup[cur_dir].setDentryFsize(name, disk.file_size(i_index), FILE_MODE);
